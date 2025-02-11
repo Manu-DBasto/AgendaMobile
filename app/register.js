@@ -4,32 +4,16 @@ import {
     StyleSheet,
     TextInput,
     TouchableOpacity,
-    Alert,
-    Platform,
 } from "react-native";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, router } from "expo-router";
-import { NetworkInfo } from "react-native-network-info";
+import config from "@/components/config";
 
 export default function Login() {
     const [name, setName] = useState("");
-    const [rol, setRol] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [repeatPassword, setRepeatPassword] = useState("");
-
-    const [ip, setIp] = useState("");
-
-    //PEGUEN AQUI SI IP:
-    const MyIpAddress = "192.168.1.72";
-
-    useEffect(() => {
-        if (Platform.OS !== "web") {
-            setIp();
-        } else {
-            setIp(`localhost`);
-        }
-    }, []);
 
     const validateEmail = (email) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -37,29 +21,19 @@ export default function Login() {
     };
 
     const handleRegister = async () => {
-        // const formattedName = name.trim();
-        // const formattedEmail = email.trim();
-        // const formattedPassword = password.trim();
-        // const formattedRepeatPassword = repeatPassword.trim();
-
         if (!email || !name || !password || !repeatPassword) {
             alert("Llene los campos antes de enviar el formulario.");
-            // Alert.alert(
-            //     "Error",
-            //     "Llene los campos antes de enviar el formulario."
-            // );
             return;
         }
 
         if (!validateEmail(email)) {
             alert("Introduzca un correo electrónico válido.");
-            // Alert.alert("Error", "Introduzca un correo electrónico válido");
             return;
         }
 
         if (password === repeatPassword) {
             try {
-                const response = await fetch(`http://${ip}:8080/login`, {
+                const response = await fetch(`${config.serverUrl}/register`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -73,20 +47,15 @@ export default function Login() {
                 const data = await response.json();
 
                 if (response.ok) {
-                    // Inicio de sesión exitoso
-                    router.push("/"); // Redirige a la pantalla /home
+                    router.push("/");
                 } else {
-                    // Error en el inicio de sesión
                     alert(data.message);
-                    // Alert.alert("Error", data.message || "Registro fallido");
                 }
             } catch (error) {
                 alert(data.message);
-                // Alert.alert("Error", error.message);
             }
         } else {
             alert("Las contraseñas no coinciden.");
-            // Alert.alert("Error", "Las contraseñas no coinciden");
         }
     };
     return (

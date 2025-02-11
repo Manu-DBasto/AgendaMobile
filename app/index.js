@@ -3,31 +3,16 @@ import {
     View,
     StyleSheet,
     TextInput,
-    Alert,
     TouchableOpacity,
-    Platform,
 } from "react-native";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useRouter } from "expo-router";
-import { NetworkInfo } from "react-native-network-info";
+import config from "@/components/config";
 
 export default function Login() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
-    const [ip, setIp] = useState("");
-
-    //PEGUEN AQUI SI IP:
-    const MyIpAddress = "192.168.1.72";
-
-    useEffect(() => {
-        if (Platform.OS !== "web") {
-            setIp(MyIpAddress);
-        } else {
-            setIp(`localhost`);
-        }
-    }, []);
 
     const validateEmail = (email) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -36,21 +21,16 @@ export default function Login() {
 
     const handleLogin = async () => {
         if (!email || !password) {
-            // Alert.alert(
-            //     "Error",
-            //     "Llene los campos antes de enviar el formulario."
-            // );
             alert("LLene los campos antes de enviar el formulario.");
             return;
         }
 
         if (!validateEmail(email)) {
             alert("Introduzca un correo electronico valido.");
-            // Alert.alert("Error", "Introduzca un correo electrónico válido");
             return;
         }
         try {
-            const response = await fetch(`http://${ip}:8080/login`, {
+            const response = await fetch(`${config.serverUrl}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -61,20 +41,12 @@ export default function Login() {
             const data = await response.json();
 
             if (response.ok) {
-                // Inicio de sesión exitoso
-                router.push("/home"); // Redirige a la pantalla /home
+                router.push("/home");
             } else {
-                // Error en el inicio de sesión
                 alert(data.message);
-                // Alert.alert(
-                //     "Error",
-                //     data.message ||
-                //         "Correo electrónico o contraseña incorrecta."
-                // );
             }
         } catch (error) {
             alert("No se pudo conectar al servidor.");
-            // Alert.alert("Error", "No se pudo conectar al servidor.");
         }
     };
 
