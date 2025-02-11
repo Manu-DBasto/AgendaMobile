@@ -1,0 +1,22 @@
+INICIALIZAR EL PROYECTO:
+    -Instalar las dependencias de la carpeta del proyecto de react native.
+        npm install
+    -Instalar las dependencias de la carpeta server.
+        cd server
+        npm install
+
+EJECUCION DEL PROYECTO
+    -Iniciar el proyecto react.
+        npx expo start 
+    -Iniciar el server.
+        npm run start
+
+CONEXION A LA BASE DE DATOS
+    En index.js y register.js de la carpeta app. Hay que cambiar las ip que se almacenan en las
+    variables "MyIpAddress" la ip de sus computadoras (pueden mirarlo con ipconfig en el cmd).
+    Esto por que el fetch se conecta a su servidor local desde el telefono, y tiene que ser mediante
+    la ip pues no es posible ejecutarlo con "localhost".
+
+    ESTOY TRABAJANDO EN ELLO, ES UNA SOLUCION TEMPORAL. Aunque quizá y lo pongo como variable de 
+    entorno o componente que solo tenga que exportarse sin tener que estar declarando la ip siempre.
+        
