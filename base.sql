@@ -6,9 +6,9 @@ CREATE TABLE usuarios (
     nombre_usuario VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     contraseña VARCHAR(255) NOT NULL,
-    teléfono VARCHAR(15),
+    telefono VARCHAR(15),
     materia_grupo VARCHAR(100),
-    rol VARCHAR(50),
+    rol VARCHAR(50) DEFAULT 'maestro',
     estado BOOLEAN NOT NULL DEFAULT 1
 );
 

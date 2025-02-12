@@ -14,8 +14,8 @@ app.use(cors(corsOptions));
 // Ruta para el registro de usuarios
 app.post("/register", async (req, res) => {
     try {
-        const { name, email, password } = req.body;
-        const user = await registerUser(name, email, password);
+        const { name, email, password, phone, subject } = req.body;
+        const user = await registerUser(name, email, password, phone, subject);
         res.status(201).json({
             message: "Usuario registrado exitosamente",
             user,

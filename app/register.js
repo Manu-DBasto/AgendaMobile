@@ -4,16 +4,24 @@ import {
     StyleSheet,
     TextInput,
     TouchableOpacity,
+    ScrollView,
+    KeyboardAvoidingView,
+    Platform,
+    TouchableWithoutFeedback,
+    Keyboard,
 } from "react-native";
 import { useState } from "react";
 import { Link, router } from "expo-router";
+import { Picker } from "@react-native-picker/picker"; // Asegúrate de instalarlo
 import config from "@/components/config";
 
-export default function Login() {
+export default function Register() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
     const [repeatPassword, setRepeatPassword] = useState("");
+    const [subject, setSubject] = useState("ingles");
 
     const validateEmail = (email) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -42,6 +50,8 @@ export default function Login() {
                         name,
                         email,
                         password,
+                        phone,
+                        subject,
                     }),
                 });
                 const data = await response.json();
@@ -52,76 +62,109 @@ export default function Login() {
                     alert(data.message);
                 }
             } catch (error) {
-                alert(data.message);
+                alert("Error al registrar.");
             }
         } else {
             alert("Las contraseñas no coinciden.");
         }
     };
+
     return (
-        <View style={styles.body}>
-            <Text style={styles.title}>Registrese</Text>
+        <KeyboardAvoidingView
+            behavior="padding"
+            keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+            style={styles.body}
+        >
+            <ScrollView contentContainerStyle={styles.scrollView}>
+                <Text style={styles.title}>Regístrese</Text>
 
-            <View style={styles.form}>
-                <View style={{ gap: 5 }}>
-                    <Text style={styles.label}>Nombre</Text>
-                    <TextInput
-                        placeholder="Julian Ortega"
-                        style={styles.input}
-                        onChangeText={setName}
-                    />
+                <View style={styles.form}>
+                    <View style={{ gap: 5 }}>
+                        <Text style={styles.label}>Nombre</Text>
+                        <TextInput
+                            placeholder="Julian Ortega"
+                            style={styles.input}
+                            onChangeText={setName}
+                            autoCapitalize="words"
+                        />
+                    </View>
+
+                    <View style={{ gap: 5 }}>
+                        <Text style={styles.label}>Materia</Text>
+                        <View style={styles.pickerContainer}>
+                            <Picker
+                                selectedValue={subject}
+                                onValueChange={(itemValue) =>
+                                    setSubject(itemValue)
+                                }
+                                style={styles.picker}
+                            >
+                                <Picker.Item label="Inglés" value="Inglés" />
+                                <Picker.Item label="Francés" value="Francés" />
+                                <Picker.Item label="Otros" value="Otros" />
+                            </Picker>
+                        </View>
+                    </View>
+
+                    <View style={{ gap: 5 }}>
+                        <Text style={styles.label}>Correo electrónico</Text>
+                        <TextInput
+                            keyboardType="email-address"
+                            placeholder="julian@mail.com"
+                            style={styles.input}
+                            onChangeText={setEmail}
+                            autoCapitalize="none"
+                        />
+                    </View>
+
+                    <View style={{ gap: 5 }}>
+                        <Text style={styles.label}>Número telefónico</Text>
+                        <TextInput
+                            keyboardType="phone-pad"
+                            placeholder="9990009999"
+                            style={styles.input}
+                            onChangeText={setPhone}
+                        />
+                    </View>
+
+                    <View style={{ gap: 5 }}>
+                        <Text style={styles.label}>Contraseña</Text>
+                        <TextInput
+                            placeholder="julian1234"
+                            secureTextEntry
+                            style={styles.input}
+                            onChangeText={setPassword}
+                            autoCapitalize="none"
+                        />
+                    </View>
+                    <View style={{ gap: 5 }}>
+                        <Text style={styles.label}>Confirmar contraseña</Text>
+                        <TextInput
+                            placeholder="julian1234"
+                            secureTextEntry
+                            style={styles.input}
+                            onChangeText={setRepeatPassword}
+                            autoCapitalize="none"
+                        />
+                    </View>
+                    <View>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={handleRegister}
+                        >
+                            <Text style={styles.textButton}>Registrarse</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
-                <View style={{ gap: 5 }}>
-                    <Text style={styles.label}>Materia</Text>
-                    <TextInput placeholder="Inglés" style={styles.input} />
-                </View>
-
-                <View style={{ gap: 5 }}>
-                    <Text style={styles.label}>Correo electrónico</Text>
-                    <TextInput
-                        keyboardType="email-address"
-                        placeholder="julian@mail.com"
-                        style={styles.input}
-                        onChangeText={setEmail}
-                    />
-                </View>
-
-                <View style={{ gap: 5 }}>
-                    <Text style={styles.label}>Contraseña</Text>
-                    <TextInput
-                        placeholder="julian1234"
-                        secureTextEntry
-                        style={styles.input}
-                        onChangeText={setPassword}
-                    />
-                </View>
-                <View style={{ gap: 5 }}>
-                    <Text style={styles.label}>Confirmar contraseña</Text>
-                    <TextInput
-                        placeholder="julian1234"
-                        secureTextEntry
-                        style={styles.input}
-                        onChangeText={setRepeatPassword}
-                    />
-                </View>
-                <View>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={handleRegister}
-                    >
-                        <Text style={styles.textButton}>Registrarse</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            <Text>
-                Ya tiene cuenta?{" "}
-                <Link href={{ pathname: "/" }} style={styles.link}>
-                    Inicie sesión
-                </Link>
-            </Text>
-        </View>
+                <Text>
+                    ¿Ya tiene cuenta?{" "}
+                    <Link href={{ pathname: "/" }} style={styles.link}>
+                        Inicie sesión
+                    </Link>
+                </Text>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -129,15 +172,19 @@ const styles = StyleSheet.create({
     body: {
         flex: 1,
         backgroundColor: "#fff",
+    },
+
+    scrollView: {
         alignItems: "center",
         justifyContent: "center",
         gap: 50,
+        paddingVertical: 20,
     },
 
     title: {
         fontSize: 30,
         color: "#690087",
-        fontWeight: 700,
+        fontWeight: "700",
     },
 
     input: {
@@ -149,12 +196,25 @@ const styles = StyleSheet.create({
         color: "#3b3b3b",
     },
 
+    pickerContainer: {
+        width: 250,
+        borderWidth: 1,
+        borderColor: "gray",
+        borderRadius: 10,
+        overflow: "hidden",
+    },
+
+    picker: {
+        width: "100%",
+        minHeight: 40,
+    },
+
     form: {
         gap: 20,
     },
 
     label: {
-        fontWeight: 600,
+        fontWeight: "600",
         color: "#690087",
     },
 
@@ -168,12 +228,12 @@ const styles = StyleSheet.create({
 
     textButton: {
         color: "#fff",
-        fontWeight: 600,
+        fontWeight: "600",
         fontSize: 15,
     },
 
     link: {
         color: "#690087",
-        fontWeight: 500,
+        fontWeight: "500",
     },
 });

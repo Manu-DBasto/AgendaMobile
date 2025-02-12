@@ -14,12 +14,12 @@ const pool = mysql
     .promise();
 
 export async function login(email, password) {
-    const [row] = await pool.query(`SELECT * FROM users WHERE email = ?`, [
+    const [row] = await pool.query(`SELECT * FROM usuarios WHERE email = ?`, [
         email,
     ]);
     if (row.length > 0) {
         const user = row[0];
-        const match = await bcrypt.compare(password, user.password);
+        const match = await bcrypt.compare(password, user.contraseña);
         if (match) {
             console.log("chi");
             return user;
@@ -31,21 +31,22 @@ export async function login(email, password) {
     }
 }
 
-export async function registerUser(name, email, password) {
+export async function registerUser(name, email, password, phone, subject) {
     // Verifica si el correo electrónico ya está registrado
     const [existingUser] = await pool.query(
-        `SELECT * FROM users WHERE email = ?`,
+        `SELECT * FROM usuarios WHERE email = ?`,
         [email]
     );
 
     if (existingUser.length > 0) {
         throw new Error("Correo electrónico ya está registrado");
     }
+
     // Si no existe, procede con el registro
     const hashedPassword = await bcrypt.hash(password, 10);
     const [result] = await pool.query(
-        `INSERT INTO users (name, email, password) VALUES (?, ?, ?)`,
-        [name, email, hashedPassword]
+        `INSERT INTO usuarios (nombre_usuario, email, contraseña, telefono, materia_grupo) VALUES (?, ?, ?, ?, ?)`,
+        [name, email, hashedPassword, phone, subject]
     );
     return result;
 }
