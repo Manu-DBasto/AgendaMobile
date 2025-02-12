@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS agenda;
 USE agenda;
 
-CREATE TABLE users (
+CREATE TABLE usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nombre_usuario VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
