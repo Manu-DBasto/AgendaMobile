@@ -5,8 +5,8 @@ import {
     TextInput,
     TouchableOpacity,
 } from "react-native";
-import { useState } from "react";
-import { Link, useRouter } from "expo-router";
+import { useState, useEffect } from "react";
+import { Link, useRouter, router } from "expo-router";
 import config from "@/components/config";
 
 export default function Login() {
@@ -41,7 +41,7 @@ export default function Login() {
             const data = await response.json();
 
             if (response.ok) {
-                router.push("/home");
+                router.push("home/home");
             } else {
                 alert(data.message);
             }
