@@ -59,9 +59,10 @@ export default function Login() {
                     <Text style={styles.label}>Correo electrónico</Text>
                     <TextInput
                         keyboardType="email-address"
-                        placeholder="julien@mail.com"
+                        placeholder="julian@mail.com"
                         onChangeText={setEmail}
                         style={styles.input}
+                        autoCapitalize="none"
                     />
                 </View>
 
@@ -72,6 +73,7 @@ export default function Login() {
                         onChangeText={setPassword}
                         secureTextEntry
                         style={styles.input}
+                        autoCapitalize="none"
                     />
                 </View>
 
@@ -106,7 +108,7 @@ const styles = StyleSheet.create({
 
     title: {
         fontSize: 30,
-        color: "#690087",
+        color: "#9146FF",
         fontWeight: 700,
     },
 
@@ -125,11 +127,11 @@ const styles = StyleSheet.create({
 
     label: {
         fontWeight: 600,
-        color: "#690087",
+        color: "#9146FF",
     },
 
     button: {
-        backgroundColor: "#690087",
+        backgroundColor: "#9146FF",
         borderRadius: 10,
         height: 40,
         justifyContent: "center",
@@ -143,7 +145,7 @@ const styles = StyleSheet.create({
     },
 
     link: {
-        color: "#690087",
+        color: "#9146FF",
         fontWeight: 500,
     },
 });

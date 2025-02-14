@@ -8,7 +8,7 @@ export default function Layout() {
             <Drawer
                 screenOptions={{
                     headerStyle: {
-                        backgroundColor: "#690087",
+                        backgroundColor: "#9146FF",
                     },
                     headerTintColor: "#fff",
                     headerTitleStyle: {

@@ -50,3 +50,19 @@ export async function registerUser(name, email, password, phone, subject) {
     );
     return result;
 }
+
+export async function getUsers() {
+    const [rows] = await pool.query("SELECT * FROM usuarios");
+    return rows;
+}
+
+export async function updateUser(id, name, email, phone, subject, rol, state) {
+    await pool.query(
+        "UPDATE usuarios SET nombre_usuario = ?, email = ?, telefono = ?, materia_grupo = ?, rol = ?, estado = ? WHERE id_usuario = ?",
+        [name, email, phone, subject, rol, state, id]
+    );
+}
+
+export async function deleteUser(id) {
+    await pool.query("DELETE FROM usuarios WHERE id_usuario = ?", [id]);
+}

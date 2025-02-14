@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
 
     title: {
         fontSize: 30,
-        color: "#690087",
+        color: "#9146FF",
         fontWeight: "700",
     },
 
@@ -215,11 +215,11 @@ const styles = StyleSheet.create({
 
     label: {
         fontWeight: "600",
-        color: "#690087",
+        color: "#9146FF",
     },
 
     button: {
-        backgroundColor: "#690087",
+        backgroundColor: "#9146FF",
         borderRadius: 10,
         height: 40,
         justifyContent: "center",
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
     },
 
     link: {
-        color: "#690087",
+        color: "#9146FF",
         fontWeight: "500",
     },
 });
