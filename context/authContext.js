@@ -1,55 +1,46 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+// AuthContext.js
+import React, { createContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 
-const AuthContext = createContext({
-    userRole: null,
-    setUserRole: () => {},
-    isAuthenticated: false,
-    setIsAuthenticated: () => {},
-    handleLogout: () => {}, // Función para cerrar sesión
-});
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [userRole, setUserRole] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const router = useRouter();
+    const [userRole, setUserRole] = useState(null);
 
     useEffect(() => {
         const checkSession = async () => {
             const userSession = await AsyncStorage.getItem("userSession");
             if (userSession) {
                 const parsedSession = JSON.parse(userSession);
-                console.log(userSession);
                 setIsAuthenticated(true);
                 setUserRole(parsedSession.rol);
             } else {
                 setIsAuthenticated(false);
-                router.replace("/"); // Redirige a login si no hay sesión
             }
         };
         checkSession();
     }, []);
 
-    const handleLogout = async () => {
+    const login = async (userData) => {
+        await AsyncStorage.setItem("userSession", JSON.stringify(userData));
+        setIsAuthenticated(true);
+        setUserRole(userData.rol);
+    };
+
+    const logout = async () => {
         await AsyncStorage.removeItem("userSession");
+        setIsAuthenticated(false);
         setUserRole(null);
         router.replace("/");
     };
 
     return (
         <AuthContext.Provider
-            value={{
-                userRole,
-                setUserRole,
-                isAuthenticated,
-                setIsAuthenticated,
-                handleLogout,
-            }}
+            value={{ isAuthenticated, userRole, login, logout }}
         >
             {children}
         </AuthContext.Provider>
     );
 };
-
-export const useAuth = () => useContext(AuthContext);

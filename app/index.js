@@ -1,3 +1,5 @@
+// Login.js
+import React, { useContext } from "react";
 import {
     Text,
     View,
@@ -5,15 +7,16 @@ import {
     TextInput,
     TouchableOpacity,
 } from "react-native";
-import { useState, useEffect } from "react";
-import { Link, useRouter, router } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useState } from "react";
+import { Link, useRouter } from "expo-router";
 import config from "@/components/config";
+import { AuthContext } from "@/context/authContext";
 
 export default function Login() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const { login } = useContext(AuthContext);
 
     const validateEmail = (email) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -42,11 +45,8 @@ export default function Login() {
             const data = await response.json();
 
             if (response.ok) {
+                login(data.user);
                 router.push("home/home");
-                await AsyncStorage.setItem(
-                    "userSession",
-                    JSON.stringify(data.user)
-                );
             } else {
                 alert(data.message);
             }
