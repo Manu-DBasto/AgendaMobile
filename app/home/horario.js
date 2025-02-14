@@ -1,12 +1,12 @@
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, Dimensions, useWindowDimensions } from "react-native";
-import { Link, useNavigation, useRouter } from "expo-router";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, useWindowDimensions } from "react-native";
 import config from "@/components/config";
-
+import { useState, useEffect } from "react";
 
 export default function Horario() {
+    const [horarios, setHorarios] = useState([]);
     const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
     const startTime = 7 * 60;
-    const endTime = 15 * 60 + 10; 
+    const endTime = 15 * 60 + 10;
     const moduleDuration = 50;
     const breakTimes = [
         { start: 8 * 60 + 40, end: 9 * 60 },
@@ -15,6 +15,38 @@ export default function Horario() {
 
     const { width } = useWindowDimensions();
     const isDesktop = width > 800;
+
+    useEffect(() => {
+        pullHorarios();
+    }, []);
+
+    const pullHorarios = async () => {
+        try {
+            const response = await fetch(`${config.serverUrl}/horario`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setHorarios(data.horario);
+                console.log("Horarios obtenidos correctamente", data.horario);
+            } else {
+                alert(data.message);
+            }
+        } catch (error) {
+            alert("No se pudo conectar al servidor.");
+        }
+    };
+
+    // Función para convertir la hora (HH:mm:ss) a minutos
+    const convertToMinutes = (time) => {
+        const [hours, minutes] = time.split(":").map(Number);
+        return hours * 60 + minutes;
+    };
 
     let schedule = [];
     let time = startTime;
@@ -42,18 +74,24 @@ export default function Horario() {
         start: `${Math.floor(mod.start / 60)}:${(mod.start % 60).toString().padStart(2, "0")}`,
         end: `${Math.floor(mod.end / 60)}:${(mod.end % 60).toString().padStart(2, "0")}`,
         isBreak: mod.isBreak,
-        days: daysOfWeek.map((day) => ({
-            subject: mod.isBreak ? "Descanso" : "Materia Y",
-            professor: mod.isBreak ? "" : "Profesor X",
-            isBreak: mod.isBreak,
-        })),
+        days: daysOfWeek.map((day) => {
+            const horario = horarios.find(h =>
+                h.dia === day &&
+                convertToMinutes(h.hora_inicio) === mod.start &&
+                convertToMinutes(h.hora_fin) === mod.end
+            );
+            return {
+                profesorId: horario ? horario.id_usuario || "Libre" : "Libre",
+                grupoId: horario ? horario.id_grupo || "Libre" : "Libre",
+                isBreak: mod.isBreak,
+            };
+        }),
     }));
 
     return (
         <View style={styles.container}>
             <ScrollView horizontal={!isDesktop} style={styles.scrollView}>
                 <View style={[styles.table, { width: isDesktop ? "100%" : width }]}>
-                    {/* Encabezado */}
                     <View style={styles.headerRow}>
                         <Text style={styles.headerCell}>Hora</Text>
                         {daysOfWeek.map((day, index) => (
@@ -61,16 +99,12 @@ export default function Horario() {
                         ))}
                     </View>
 
-                    {/* Filas de horario */}
                     <FlatList
                         data={fullSchedule}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item }) => (
                             <View style={styles.row}>
-                                {/* Hora */}
                                 <Text style={styles.timeCell}>{item.start} - {item.end}</Text>
-
-                                {/* Celdas de días */}
                                 {item.days.map((day, index) => (
                                     <TouchableOpacity
                                         key={index}
@@ -78,8 +112,8 @@ export default function Horario() {
                                         style={[styles.cell, day.isBreak && styles.breakCell]}
                                         disabled={day.isBreak}
                                     >
-                                        <Text style={styles.subjectText}>{day.subject}</Text>
-                                        <Text style={styles.professorText}>{day.professor}</Text>
+                                        <Text style={styles.professorText}>{day.isBreak ? "Descanso" : `Prof: ${day.profesorId}`}</Text>
+                                        <Text style={styles.groupText}>{day.isBreak ? "" : `Grupo: ${day.grupoId}`}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </View>
@@ -96,18 +130,12 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#f4f4f4",
         padding: 10,
-
     },
     scrollView: {
         flex: 1,
     },
     table: {
         flex: 1,
-    },
-    desktopTable: {
-        width: "100%",
-
-
     },
     headerRow: {
         flexDirection: "row",
@@ -151,11 +179,11 @@ const styles = StyleSheet.create({
     breakCell: {
         backgroundColor: "#ffcc80",
     },
-    subjectText: {
+    professorText: {
         fontSize: 14,
         fontWeight: "bold",
     },
-    professorText: {
+    groupText: {
         fontSize: 12,
         color: "#555",
     },

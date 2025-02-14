@@ -41,15 +41,18 @@ app.post("/login", async (req, res) => {
         });
     }
 });
-app.post("/horario", async ( req, res )=>{
-    try{
+
+
+app.post("/horario", async (req, res) => {
+    try {
         const horario = await getHorarios();
         res.status(200).json({ message: "Horarios obtenidos correctamente", horario });
-    }catch{
+    } catch (error) {
+        console.error("Error al obtener los horarios:", error);
         res.status(401).json({
             message: error.message,
             error: error.message,
-    });
+        });
     }
 });
 

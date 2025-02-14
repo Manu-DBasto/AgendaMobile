@@ -54,6 +54,8 @@ export async function registerUser(name, email, password, phone, subject) {
 export async function getHorarios() {
     try {
         const [rows] = await pool.query(`SELECT * FROM horarios`);
+
+        
         return rows;
     } catch (error) {
         console.error("Error al obtener los horarios:", error);
