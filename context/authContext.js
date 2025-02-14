@@ -18,6 +18,7 @@ export const AuthProvider = ({ children }) => {
                 setUserRole(parsedSession.rol);
             } else {
                 setIsAuthenticated(false);
+                router.replace("/");
             }
         };
         checkSession();

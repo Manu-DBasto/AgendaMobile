@@ -307,15 +307,15 @@ const styles = StyleSheet.create({
     button: { padding: 10, borderRadius: 5 },
 
     save: {
-        backgroundColor: "#28a745",
+        backgroundColor: "#66b366",
     },
 
     delete: {
-        backgroundColor: "#dc3545",
+        backgroundColor: "#CB413F",
     },
 
     cancel: {
-        backgroundColor: "#6c757d",
+        backgroundColor: "#b3b3b3",
     },
 
     buttonText: {

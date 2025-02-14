@@ -17,7 +17,6 @@ export default function HomeScreen() {
                 title="Abrir Menú"
                 onPress={() => navigation.openDrawer()}
             /> */}
-            <Link href={{ pathname: "/" }}>Go to login</Link>
         </View>
     );
 }

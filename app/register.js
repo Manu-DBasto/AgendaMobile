@@ -10,10 +10,11 @@ import {
     TouchableWithoutFeedback,
     Keyboard,
 } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, router } from "expo-router";
 import { Picker } from "@react-native-picker/picker"; // Asegúrate de instalarlo
 import config from "@/components/config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Register() {
     const [name, setName] = useState("");
@@ -27,6 +28,16 @@ export default function Register() {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(email);
     };
+
+    useEffect(() => {
+        const checkSession = async () => {
+            const userSession = await AsyncStorage.getItem("userSession");
+            if (userSession) {
+                router.replace("/home/home");
+            }
+        };
+        checkSession();
+    }, []);
 
     const handleRegister = async () => {
         if (!email || !name || !password || !repeatPassword) {

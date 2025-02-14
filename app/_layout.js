@@ -4,7 +4,7 @@ import { AuthContext } from "@/context/authContext";
 import { Stack, useRouter } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { TouchableOpacity, Text, View } from "react-native";
+import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
 import React from "react";
 
 export default function Layout() {
@@ -61,33 +61,52 @@ function CustomDrawerContent(props) {
     const { isAuthenticated, userRole, logout } = React.useContext(AuthContext);
 
     return (
-        <View style={{ flex: 1, padding: 20 }}>
+        <View style={style.drawer}>
             <TouchableOpacity
                 onPress={() => navigation.navigate("home/home")}
-                style={{ paddingVertical: 10 }}
+                style={style.options}
             >
-                <Text style={{ fontSize: 18 }}>Inicio</Text>
+                <Text style={style.textOptions}>Inicio</Text>
             </TouchableOpacity>
 
             {userRole === "admin" && (
                 <TouchableOpacity
                     onPress={() => navigation.navigate("home/users")}
-                    style={{ paddingVertical: 10 }}
+                    style={style.options}
                 >
-                    <Text style={{ fontSize: 18 }}>Usuarios</Text>
+                    <Text style={style.textOptions}>Usuarios</Text>
                 </TouchableOpacity>
             )}
 
             {isAuthenticated && (
-                <TouchableOpacity
-                    onPress={logout}
-                    style={{ paddingVertical: 10, marginTop: 20 }}
-                >
-                    <Text style={{ fontSize: 18, color: "red" }}>
-                        Cerrar sesión
-                    </Text>
+                <TouchableOpacity onPress={logout} style={style.options}>
+                    <Text style={style.logout}>Cerrar sesión</Text>
                 </TouchableOpacity>
             )}
         </View>
     );
 }
+
+const style = StyleSheet.create({
+    drawer: {
+        flex: 1,
+        padding: 20,
+        gap: 20,
+    },
+    options: {
+        borderTopWidth: 1,
+        borderBottomWidth: 1,
+        borderColor: "#f4edff",
+    },
+    textOptions: {
+        fontWeight: "600",
+        fontSize: 16,
+        padding: 10,
+    },
+    logout: {
+        color: "#CB413F",
+        fontWeight: "600",
+        fontSize: 16,
+        padding: 10,
+    },
+});
