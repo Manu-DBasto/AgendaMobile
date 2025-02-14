@@ -37,6 +37,7 @@ CREATE TABLE horario_historial (
     hora_inicio TIME NOT NULL,
     hora_fin TIME NOT NULL,
     dia VARCHAR(20) NOT NULL,
+    cuatrimestre VARCHAR(30)NOT NULL,
     id_usuario INT,
     id_grupo INT,
     estado BOOLEAN NOT NULL DEFAULT 1,
@@ -78,3 +79,37 @@ CREATE TABLE notificaciones (
     FOREIGN KEY (emisor) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (receptor) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
 );
+
+--meter base:
+INSERT INTO grupos (nombre_grupo, carrera, numero_alumnos, estado) VALUES
+('8-A', 'Ingeniería en Sistemas', 30, 1),
+('5-B', 'Administración de Empresas', 25, 1),
+('2-C', 'Contaduría Pública', 28, 1);
+
+INSERT INTO horarios (hora_inicio, hora_fin, dia, id_usuario, id_grupo, estado) VALUES
+('07:00:00', '07:50:00', 'Lunes', 1, 1, 1),
+('07:00:00', '07:50:00', 'Martes', 1, 2, 1),
+('07:00:00', '07:50:00', 'Miércoles', 1, 3, 1);
+
+INSERT INTO horario_historial (hora_inicio, hora_fin, dia, cuatrimestre, id_usuario, id_grupo, estado) VALUES
+('07:00:00', '07:50:00', 'Lunes', 'Q1-2024', 1, 1, 1),
+('07:00:00', '07:50:00', 'Martes', 'Q1-2024', 1, 2, 1),
+('07:00:00', '07:50:00', 'Miércoles', 'Q1-2024', 1, 3, 1);
+
+INSERT INTO solicitudes (id_horario, id_solicitante, id_grupo_nuevo, descripcion, estado) VALUES
+(1, 1, 2, 'Cambio de horario por incompatibilidad', 'Pendiente'),
+(2, 1, 3, 'Cambio de grupo por exceso de alumnos', 'Aprobado'),
+(3, 1, 1, 'Cambio de horario por razones personales', 'Rechazado');
+
+INSERT INTO modificaciones (id_horario, maestro_nuevo, grupo_nuevo, fecha_inicio, fecha_fin, estado) VALUES
+(1, 1, 2, '2024-02-01', '2024-06-30', 1),
+(2, 1, 3, '2024-02-01', '2024-06-30', 1),
+(3, 1, 1, '2024-02-01', '2024-06-30', 1);
+
+INSERT INTO notificaciones (emisor, receptor, descripcion, estado) VALUES
+(1, 1, 'Se ha aprobado tu solicitud de cambio de grupo.', 'Leído'),
+(1, 1, 'Tu horario ha sido modificado.', 'No leído'),
+(1, 1, 'Tienes una nueva solicitud pendiente de aprobación.', 'No leído');
+
+
+
