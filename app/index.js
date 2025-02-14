@@ -1,5 +1,5 @@
 // Login.js
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
     Text,
     View,
@@ -22,6 +22,16 @@ export default function Login() {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(email);
     };
+
+    useEffect(() => {
+        const checkSession = async () => {
+            const userSession = await AsyncStorage.getItem("userSession");
+            if (userSession) {
+                router.replace("/home/home");
+            }
+        };
+        checkSession();
+    }, []);
 
     const handleLogin = async () => {
         if (!email || !password) {
