@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { useState, useEffect } from "react";
 import { Link, useRouter, router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import config from "@/components/config";
 
 export default function Login() {
@@ -42,6 +43,10 @@ export default function Login() {
 
             if (response.ok) {
                 router.push("home/home");
+                await AsyncStorage.setItem(
+                    "userSession",
+                    JSON.stringify(data.user)
+                );
             } else {
                 alert(data.message);
             }
