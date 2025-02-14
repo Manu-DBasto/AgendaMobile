@@ -1,5 +1,5 @@
 import express from "express";
-import { login, registerUser } from "./database.js";
+import { login, registerUser, getHorarios } from "./database.js";
 import cors from "cors";
 
 const app = express();
@@ -39,6 +39,17 @@ app.post("/login", async (req, res) => {
             message: error.message,
             error: error.message,
         });
+    }
+});
+app.post("/horario", async ( req, res )=>{
+    try{
+        const horario = await getHorarios();
+        res.status(200).json({ message: "Horarios obtenidos correctamente", horario });
+    }catch{
+        res.status(401).json({
+            message: error.message,
+            error: error.message,
+    });
     }
 });
 

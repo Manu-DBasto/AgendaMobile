@@ -31,6 +31,7 @@ export default function Layout() {
                         drawerItemStyle: { display: "none" },
                     }}
                 />
+                <Drawer.Screen name="home/horario" options={{ title: "Horario" }} />
                 <Drawer.Screen name="home/home" options={{ title: "Inicio" }} />
                 <Drawer.Screen
                     name="home/users"
