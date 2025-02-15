@@ -42,12 +42,6 @@ export default function Horario() {
         }
     };
 
-    // Función para convertir la hora (HH:mm:ss) a minutos
-    const convertToMinutes = (time) => {
-        const [hours, minutes] = time.split(":").map(Number);
-        return hours * 60 + minutes;
-    };
-
     let schedule = [];
     let time = startTime;
     while (time + moduleDuration <= endTime) {
@@ -70,23 +64,25 @@ export default function Horario() {
         }
     }
 
-    const fullSchedule = schedule.map((mod) => ({
-        start: `${Math.floor(mod.start / 60)}:${(mod.start % 60).toString().padStart(2, "0")}`,
-        end: `${Math.floor(mod.end / 60)}:${(mod.end % 60).toString().padStart(2, "0")}`,
-        isBreak: mod.isBreak,
-        days: daysOfWeek.map((day) => {
-            const horario = horarios.find(h =>
-                h.dia === day &&
-                convertToMinutes(h.hora_inicio) === mod.start &&
-                convertToMinutes(h.hora_fin) === mod.end
-            );
-            return {
-                profesorId: horario ? horario.id_usuario || "Libre" : "Libre",
-                grupoId: horario ? horario.id_grupo || "Libre" : "Libre",
-                isBreak: mod.isBreak,
-            };
-        }),
-    }));
+    const fullSchedule = schedule.map((mod) => {
+        const startFormatted = `${String(Math.floor(mod.start / 60)).padStart(2, "0")}:${(mod.start % 60).toString().padStart(2, "0")}:00`;
+        const endFormatted = `${String(Math.floor(mod.end / 60)).padStart(2, "0")}:${(mod.end % 60).toString().padStart(2, "0")}`;
+
+        return {
+            start: startFormatted.slice(0, -3),
+            end: endFormatted,
+            isBreak: mod.isBreak,
+            days: daysOfWeek.map((day) => {
+                const horario = horarios.find(h => h.dia === day && h.hora_inicio === startFormatted);
+                return {
+                    profesor: horario ? horario.profesor || "Libre" : "Libre",
+                    grupo: horario ? horario.grupo || "Libre" : "Libre",
+                    carrera: horario ? horario.carrera || "Sin carrera" : "Sin carrera",
+                    isBreak: mod.isBreak,
+                };
+            }),
+        };
+    });
 
     return (
         <View style={styles.container}>
@@ -112,8 +108,9 @@ export default function Horario() {
                                         style={[styles.cell, day.isBreak && styles.breakCell]}
                                         disabled={day.isBreak}
                                     >
-                                        <Text style={styles.professorText}>{day.isBreak ? "Descanso" : `Prof: ${day.profesorId}`}</Text>
-                                        <Text style={styles.groupText}>{day.isBreak ? "" : `Grupo: ${day.grupoId}`}</Text>
+                                        <Text style={styles.professorText}>{day.isBreak ? "Descanso" : `Prof: ${day.profesor}`}</Text>
+                                        <Text style={styles.groupText}>{day.isBreak ? "" : `Grupo: ${day.grupo}`}</Text>
+                                        <Text style={styles.careerText}>{day.isBreak ? "" : `Carrera: ${day.carrera}`}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </View>
@@ -186,5 +183,10 @@ const styles = StyleSheet.create({
     groupText: {
         fontSize: 12,
         color: "#555",
+    },
+    careerText: {
+        fontSize: 12,
+        color: "#888",
+        fontStyle: "italic",
     },
 });

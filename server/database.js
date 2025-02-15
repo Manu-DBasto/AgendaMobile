@@ -53,12 +53,26 @@ export async function registerUser(name, email, password, phone, subject) {
 
 export async function getHorarios() {
     try {
-        const [rows] = await pool.query(`SELECT * FROM horarios`);
+        const [rows] = await pool.query(`
+            SELECT 
+                h.id_horario,
+                h.hora_inicio,
+                h.hora_fin,
+                h.dia,
+                u.nombre_usuario AS profesor,
+                g.nombre_grupo AS grupo,
+                g.carrera,
+                h.estado
+            FROM horarios h
+            LEFT JOIN usuarios u ON h.id_usuario = u.id_usuario
+            LEFT JOIN grupos g ON h.id_grupo = g.id_grupo
+        `);
 
-        
         return rows;
     } catch (error) {
         console.error("Error al obtener los horarios:", error);
         throw error;
     }
 }
+
+
