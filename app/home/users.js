@@ -298,13 +298,17 @@ const styles = StyleSheet.create({
     dataText: { color: colors.onAccent },
 
     //Estilos del modal
-    modalContainer: {},
+    modalContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
     modal: {
         backgroundColor: colors.greenBackground,
         padding: 20,
         borderRadius: 10,
         gap: 10,
         maxWidth: 700,
+        width: "100%",
     },
 
     input: {
