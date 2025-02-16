@@ -1,9 +1,19 @@
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, useWindowDimensions } from "react-native";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, useWindowDimensions, Modal, TextInput, Button, Picker } from "react-native";
 import config from "@/components/config";
 import { useState, useEffect } from "react";
 
+// Condicional para verificar si estamos en un entorno web o móvil
+const isDesktop = typeof window !== 'undefined' && window.innerWidth > 800;
+
 export default function Horario() {
     const [horarios, setHorarios] = useState([]);
+    const [selectedCell, setSelectedCell] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [nextModuleSame, setNextModuleSame] = useState(false);
+    const [selectedProfesor, setSelectedProfesor] = useState("");
+    const [selectedGrupo, setSelectedGrupo] = useState("");
+    const [profesores, setProfesores] = useState([]);
+    const [grupos, setGrupos] = useState([]);
     const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
     const startTime = 7 * 60;
     const endTime = 15 * 60 + 10;
@@ -14,10 +24,11 @@ export default function Horario() {
     ];
 
     const { width } = useWindowDimensions();
-    const isDesktop = width > 800;
 
     useEffect(() => {
         pullHorarios();
+        fetchProfesores();
+        fetchGrupos();
     }, []);
 
     const pullHorarios = async () => {
@@ -39,6 +50,48 @@ export default function Horario() {
             }
         } catch (error) {
             alert("No se pudo conectar al servidor.");
+        }
+    };
+
+    const fetchProfesores = async () => {
+        try {
+            const response = await fetch(`${config.serverUrl}/usuarios`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setProfesores(data.usuarios);
+            } else {
+                alert(data.message);
+            }
+        } catch (error) {
+            alert("No se pudo obtener los profesores.");
+        }
+    };
+
+    const fetchGrupos = async () => {
+        try {
+            const response = await fetch(`${config.serverUrl}/grupos`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setGrupos(data.grupos);
+            } else {
+                alert(data.message);
+            }
+        } catch (error) {
+            alert("No se pudo obtener los grupos.");
         }
     };
 
@@ -84,6 +137,23 @@ export default function Horario() {
         };
     });
 
+    const handleCellPress = (mod, dayIndex) => {
+        setSelectedCell(mod.days[dayIndex]);
+        setSelectedProfesor(mod.days[dayIndex].profesor || "");
+        setSelectedGrupo(mod.days[dayIndex].grupo || "");
+        setShowModal(true);
+    };
+
+    const handleSave = () => {
+        // Save logic here
+        setShowModal(false);
+    };
+
+    const handleDelete = () => {
+        // Delete logic here
+        setShowModal(false);
+    };
+
     return (
         <View style={styles.container}>
             <ScrollView horizontal={!isDesktop} style={styles.scrollView}>
@@ -104,7 +174,7 @@ export default function Horario() {
                                 {item.days.map((day, index) => (
                                     <TouchableOpacity
                                         key={index}
-                                        onPress={() => console.log(`Tocaste ${item.start} - ${item.end} en ${daysOfWeek[index]}`)}
+                                        onPress={() => handleCellPress(item, index)}
                                         style={[styles.cell, day.isBreak && styles.breakCell]}
                                         disabled={day.isBreak}
                                     >
@@ -118,6 +188,57 @@ export default function Horario() {
                     />
                 </View>
             </ScrollView>
+
+            <Modal
+                visible={showModal}
+                animationType="slide"
+                onRequestClose={() => setShowModal(false)}
+                transparent={true}
+                style={styles.modal}
+            >
+                <View style={[styles.modalContent, isDesktop && styles.modalDesktop]}>
+                    <Text style={styles.modalTitle}>Editar Horario</Text>
+
+                    <Text>Profesor Nuevo:</Text>
+                    <Picker
+                        selectedValue={selectedProfesor}
+                        style={styles.input}
+                        onValueChange={(itemValue) => setSelectedProfesor(itemValue)}
+                    >
+                        <Picker.Item label="Seleccionar Profesor" value="" />
+                        {profesores.map(profesor => (
+                            <Picker.Item key={profesor.id_usuario} label={profesor.nombre_usuario} value={profesor.id_usuario} />
+                        ))}
+                    </Picker>
+
+                    <Text>Grupo Nuevo:</Text>
+                    <Picker
+                        selectedValue={selectedGrupo}
+                        style={styles.input}
+                        onValueChange={(itemValue) => setSelectedGrupo(itemValue)}
+                    >
+                        <Picker.Item label="Seleccionar Grupo" value="" />
+                        {grupos.map(grupo => (
+                            <Picker.Item key={grupo.id_grupo} label={`${grupo.nombre_grupo} - ${grupo.carrera}`} value={grupo.id_grupo} />
+                        ))}
+                    </Picker>
+
+                    <Text>¿Desea cambiar igual el módulo siguiente?</Text>
+                    <TouchableOpacity
+                        style={styles.checkbox}
+                        onPress={() => setNextModuleSame(!nextModuleSame)}
+                    >
+                        <Text>{nextModuleSame ? "✓" : "✘"}</Text>
+                    </TouchableOpacity>
+
+                    <View style={styles.buttons}>
+                        <Button title="Eliminar" onPress={handleDelete} />
+                        <Button title="Guardar" onPress={handleSave} />
+                    </View>
+
+                    <Button title="Cerrar" onPress={() => setShowModal(false)} />
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -130,6 +251,7 @@ const styles = StyleSheet.create({
     },
     scrollView: {
         flex: 1,
+        width: "100%",
     },
     table: {
         flex: 1,
@@ -188,5 +310,48 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: "#888",
         fontStyle: "italic",
+    },
+    modalContent: {
+        padding: 20,
+        backgroundColor: "#fff",
+        flex: 1,
+        justifyContent: "center",  // Centrar el contenido en el modal
+        maxHeight: "80%",  // Asegura que el contenido no sobresalga
+        overflow: "scroll",  // Permite desplazarse si el contenido es muy largo
+    },
+    modalDesktop: {
+        width: 500,
+        height: "auto",
+        marginLeft: "auto",
+        marginRight: "auto",
+        borderRadius: 8,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
+        marginBottom: 10,
+    },
+    input: {
+        borderWidth: 1,
+        padding: 10,
+        marginBottom: 10,
+    },
+    checkbox: {
+        padding: 10,
+        backgroundColor: "#eee",
+        marginBottom: 10,
+    },
+    buttons: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginBottom: 20,
+    },
+    modal: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)", // Fondo semi-transparente
+        width: "100%", // Para que ocupe el 100% de la pantalla
+        height: "100%", // Para asegurarnos de que ocupe toda la altura
     },
 });
