@@ -6,6 +6,7 @@ import {
     StyleSheet,
     TextInput,
     TouchableOpacity,
+    Platform,
 } from "react-native";
 import { useState } from "react";
 import { Link, useRouter } from "expo-router";
@@ -68,47 +69,51 @@ export default function Login() {
 
     return (
         <View style={styles.body}>
-            <Text style={styles.title}>Log in</Text>
+            <View style={styles.wrapper}>
+                <Text style={styles.title}>Log in</Text>
 
-            <View style={styles.form}>
-                <View style={{ gap: 5 }}>
-                    <Text style={styles.label}>Correo electrónico</Text>
-                    <TextInput
-                        keyboardType="email-address"
-                        placeholder="julian@mail.com"
-                        onChangeText={setEmail}
-                        style={styles.input}
-                        autoCapitalize="none"
-                    />
+                <View style={styles.form}>
+                    <View style={{ gap: 5 }}>
+                        <Text style={styles.label}>Correo electrónico</Text>
+                        <TextInput
+                            keyboardType="email-address"
+                            placeholder="julian@mail.com"
+                            onChangeText={setEmail}
+                            style={styles.input}
+                            autoCapitalize="none"
+                        />
+                    </View>
+
+                    <View style={{ gap: 5 }}>
+                        <Text style={styles.label}>Contraseña</Text>
+                        <TextInput
+                            placeholder="julian1234"
+                            onChangeText={setPassword}
+                            secureTextEntry
+                            style={styles.input}
+                            autoCapitalize="none"
+                        />
+                    </View>
+
+                    <View>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={handleLogin}
+                        >
+                            <Text style={styles.textButton}>
+                                Iniciar sesión
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
-                <View style={{ gap: 5 }}>
-                    <Text style={styles.label}>Contraseña</Text>
-                    <TextInput
-                        placeholder="julian1234"
-                        onChangeText={setPassword}
-                        secureTextEntry
-                        style={styles.input}
-                        autoCapitalize="none"
-                    />
-                </View>
-
-                <View>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={handleLogin}
-                    >
-                        <Text style={styles.textButton}>Iniciar sesión</Text>
-                    </TouchableOpacity>
-                </View>
+                <Text>
+                    No tiene cuenta?{" "}
+                    <Link href={{ pathname: "/register" }} style={styles.link}>
+                        Registrese
+                    </Link>
+                </Text>
             </View>
-
-            <Text>
-                No tiene cuenta?{" "}
-                <Link href={{ pathname: "/register" }} style={styles.link}>
-                    Registrese
-                </Link>
-            </Text>
         </View>
     );
 }
@@ -116,12 +121,15 @@ export default function Login() {
 const styles = StyleSheet.create({
     body: {
         flex: 1,
-        backgroundColor: "#fff",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+
+    wrapper: {
         alignItems: "center",
         justifyContent: "center",
         gap: 50,
     },
-
     title: {
         fontSize: 30,
         color: "#9146FF",
@@ -164,4 +172,37 @@ const styles = StyleSheet.create({
         color: "#9146FF",
         fontWeight: 500,
     },
+
+    ...(Platform.OS === "web"
+        ? {
+              body: {
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "center",
+              },
+
+              wrapper: {
+                  backgroundColor: "#fff",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 50,
+                  padding: 50,
+                  borderRadius: 40,
+              },
+          }
+        : {
+              body: {
+                  backgroundColor: "#fff",
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "center",
+              },
+
+              wrapper: {
+                  backgroundColor: "#fff",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 50,
+              },
+          }),
 });

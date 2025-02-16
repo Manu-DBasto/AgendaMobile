@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
                 const parsedSession = JSON.parse(userSession);
                 setIsAuthenticated(true);
                 setUserRole(parsedSession.rol);
+                console.log(userSession);
             } else {
                 setIsAuthenticated(false);
                 router.replace("/");

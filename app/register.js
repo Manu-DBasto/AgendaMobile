@@ -191,6 +191,28 @@ const styles = StyleSheet.create({
         gap: 50,
         paddingVertical: 20,
     },
+    ...(Platform.OS === "web"
+        ? {
+              body: {
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginTop: 30,
+              },
+
+              scrollView: {
+                  backgroundColor: "#fff",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 50,
+                  paddingBottom: 20,
+                  paddingTop: 20,
+                  paddingLeft: 50,
+                  paddingRight: 50,
+                  borderRadius: 40,
+              },
+          }
+        : {}),
 
     title: {
         fontSize: 30,
