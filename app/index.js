@@ -13,6 +13,7 @@ import { Link, useRouter } from "expo-router";
 import config from "@/components/config";
 import { AuthContext } from "@/context/authContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { colors } from "@/assets/utilities/colors";
 
 export default function Login() {
     const router = useRouter();
@@ -123,26 +124,32 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
+        backgroundColor: colors.greenBackground,
     },
 
     wrapper: {
         alignItems: "center",
         justifyContent: "center",
         gap: 50,
+        backgroundColor: colors.light,
+        padding: 50,
+        borderRadius: 40,
     },
+
     title: {
         fontSize: 30,
-        color: "#9146FF",
-        fontWeight: 700,
+        color: colors.primary,
+        fontWeight: "700",
     },
 
     input: {
         width: 250,
         borderWidth: 1,
-        borderColor: "gray",
+        borderColor: colors.secondary,
         borderRadius: 10,
         padding: 10,
-        color: "#3b3b3b",
+        color: colors.dark,
+        backgroundColor: colors.light,
     },
 
     form: {
@@ -150,12 +157,12 @@ const styles = StyleSheet.create({
     },
 
     label: {
-        fontWeight: 600,
-        color: "#9146FF",
+        fontWeight: "600",
+        color: colors.secondary,
     },
 
     button: {
-        backgroundColor: "#9146FF",
+        backgroundColor: colors.accent,
         borderRadius: 10,
         height: 40,
         justifyContent: "center",
@@ -163,14 +170,14 @@ const styles = StyleSheet.create({
     },
 
     textButton: {
-        color: "#fff",
-        fontWeight: 600,
+        color: colors.light,
+        fontWeight: "600",
         fontSize: 15,
     },
 
     link: {
-        color: "#9146FF",
-        fontWeight: 500,
+        color: colors.accent,
+        fontWeight: "500",
     },
 
     ...(Platform.OS === "web"
@@ -179,10 +186,11 @@ const styles = StyleSheet.create({
                   flex: 1,
                   alignItems: "center",
                   justifyContent: "center",
+                  backgroundColor: colors.greenBackground,
               },
 
               wrapper: {
-                  backgroundColor: "#fff",
+                  backgroundColor: colors.background,
                   alignItems: "center",
                   justifyContent: "center",
                   gap: 50,
@@ -192,14 +200,14 @@ const styles = StyleSheet.create({
           }
         : {
               body: {
-                  backgroundColor: "#fff",
+                  backgroundColor: colors.background,
                   flex: 1,
                   alignItems: "center",
                   justifyContent: "center",
               },
 
               wrapper: {
-                  backgroundColor: "#fff",
+                  backgroundColor: colors.background,
                   alignItems: "center",
                   justifyContent: "center",
                   gap: 50,

@@ -11,6 +11,7 @@ import Modal from "react-native-modal";
 import { DataTable } from "react-native-paper";
 import config from "@/components/config";
 import { Picker } from "@react-native-picker/picker";
+import { colors } from "@/assets/utilities/colors";
 
 export default function Users() {
     const [users, setUsers] = useState([]);
@@ -71,7 +72,7 @@ export default function Users() {
             <Text style={styles.instruction}>
                 Toque sobre uno de los usuarios.
             </Text>
-            <DataTable>
+            <DataTable style={styles.tableContainer}>
                 <DataTable.Header>
                     <DataTable.Title>Nombre</DataTable.Title>
                     <DataTable.Title>Email</DataTable.Title>
@@ -80,19 +81,30 @@ export default function Users() {
                 <FlatList
                     data={users}
                     keyExtractor={(users) => users.id_usuario}
-                    renderItem={({ item }) => (
+                    renderItem={({ item, index }) => (
                         <TouchableOpacity
                             onPress={() => {
                                 setSelectedUser(item);
                                 setModalVisible(true);
                             }}
                         >
-                            <DataTable.Row>
-                                <DataTable.Cell>
+                            <DataTable.Row
+                                style={[
+                                    styles.row,
+                                    index % 2 === 0
+                                        ? styles.tableRowfirst
+                                        : styles.tableRowsecond,
+                                ]}
+                            >
+                                <DataTable.Cell style={styles.dataText}>
                                     {item.nombre_usuario}
                                 </DataTable.Cell>
-                                <DataTable.Cell>{item.email}</DataTable.Cell>
-                                <DataTable.Cell>{item.telefono}</DataTable.Cell>
+                                <DataTable.Cell style={styles.dataText}>
+                                    {item.email}
+                                </DataTable.Cell>
+                                <DataTable.Cell style={styles.dataText}>
+                                    {item.telefono}
+                                </DataTable.Cell>
                             </DataTable.Row>
                         </TouchableOpacity>
                     )}
@@ -102,6 +114,7 @@ export default function Users() {
             <Modal
                 isVisible={isModalVisible}
                 onBackdropPress={() => setModalVisible(false)}
+                style={styles.modalContainer}
             >
                 <View style={styles.modal}>
                     <Text style={styles.title}>Usuario</Text>
@@ -246,7 +259,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: "#fff",
+        backgroundColor: colors.background,
+        alignItems: "center",
     },
 
     title: {
@@ -254,7 +268,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         marginBottom: 5,
         textAlign: "center",
-        color: "#9146FF",
+        color: colors.primary,
     },
 
     instruction: {
@@ -262,28 +276,49 @@ const styles = StyleSheet.create({
         fontWeight: 500,
         marginBottom: 15,
         textAlign: "center",
-        color: "gray",
+        color: colors.secondary,
     },
 
+    tableContainer: {
+        backgroundColor: colors.light,
+        padding: 20,
+        borderRadius: 20,
+        maxWidth: 700,
+    },
+
+    tableRowfirst: {
+        borderColor: colors.accent,
+        backgroundColor: colors.light,
+    },
+    tableRowsecond: {
+        borderColor: colors.accent,
+        backgroundColor: colors.background,
+    },
+
+    dataText: { color: colors.onAccent },
+
+    //Estilos del modal
+    modalContainer: {},
     modal: {
-        backgroundColor: "#fff",
+        backgroundColor: colors.greenBackground,
         padding: 20,
         borderRadius: 10,
         gap: 10,
+        maxWidth: 700,
     },
 
     input: {
         borderWidth: 1,
         padding: 10,
         borderRadius: 10,
-        borderColor: "gray",
-        color: "#3b3b3b",
-        backgroundColor: "#f4edff",
+        borderColor: colors.secondary,
+        color: colors.onAccent,
+        backgroundColor: colors.light,
     },
 
     pickerContainer: {
         borderWidth: 1,
-        borderColor: "gray",
+        borderColor: colors.secondary,
         borderRadius: 10,
         overflow: "hidden",
     },
@@ -291,11 +326,12 @@ const styles = StyleSheet.create({
     picker: {
         width: "100%",
         minHeight: 40,
-        backgroundColor: "#f4edff",
+        backgroundColor: colors.light,
     },
+
     label: {
         fontWeight: "600",
-        color: "#9146FF",
+        color: colors.secondary,
     },
 
     modalButtons: {
@@ -307,19 +343,19 @@ const styles = StyleSheet.create({
     button: { padding: 10, borderRadius: 5 },
 
     save: {
-        backgroundColor: "#66b366",
+        backgroundColor: colors.success,
     },
 
     delete: {
-        backgroundColor: "#CB413F",
+        backgroundColor: colors.error,
     },
 
     cancel: {
-        backgroundColor: "#b3b3b3",
+        backgroundColor: colors.dark,
     },
 
     buttonText: {
-        color: "white",
+        color: colors.light,
         fontWeight: "bold",
     },
 });

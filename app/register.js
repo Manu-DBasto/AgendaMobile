@@ -12,7 +12,9 @@ import {
 } from "react-native";
 import { useState, useEffect } from "react";
 import { Link, router } from "expo-router";
-import { Picker } from "@react-native-picker/picker"; // Asegúrate de instalarlo
+import { Picker } from "@react-native-picker/picker";
+import { colors } from "@/assets/utilities/colors";
+
 import config from "@/components/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -182,7 +184,7 @@ export default function Register() {
 const styles = StyleSheet.create({
     body: {
         flex: 1,
-        backgroundColor: "#fff",
+        backgroundColor: colors.background, // Fondo blanco
     },
 
     scrollView: {
@@ -191,17 +193,19 @@ const styles = StyleSheet.create({
         gap: 50,
         paddingVertical: 20,
     },
+
     ...(Platform.OS === "web"
         ? {
               body: {
                   flex: 1,
                   alignItems: "center",
                   justifyContent: "center",
-                  marginTop: 30,
+                  paddingTop: 30,
+                  backgroundColor: colors.primary,
               },
 
               scrollView: {
-                  backgroundColor: "#fff",
+                  backgroundColor: colors.background,
                   alignItems: "center",
                   justifyContent: "center",
                   gap: 50,
@@ -216,25 +220,27 @@ const styles = StyleSheet.create({
 
     title: {
         fontSize: 30,
-        color: "#9146FF",
+        color: colors.primary,
         fontWeight: "700",
     },
 
     input: {
         width: 250,
         borderWidth: 1,
-        borderColor: "gray",
+        borderColor: colors.secondary,
         borderRadius: 10,
         padding: 10,
-        color: "#3b3b3b",
+        color: colors.dark,
+        backgroundColor: colors.light,
     },
 
     pickerContainer: {
         width: 250,
         borderWidth: 1,
-        borderColor: "gray",
+        borderColor: colors.secondary,
         borderRadius: 10,
         overflow: "hidden",
+        backgroundColor: colors.light,
     },
 
     picker: {
@@ -248,11 +254,11 @@ const styles = StyleSheet.create({
 
     label: {
         fontWeight: "600",
-        color: "#9146FF",
+        color: colors.secondary,
     },
 
     button: {
-        backgroundColor: "#9146FF",
+        backgroundColor: colors.accent,
         borderRadius: 10,
         height: 40,
         justifyContent: "center",
@@ -260,13 +266,13 @@ const styles = StyleSheet.create({
     },
 
     textButton: {
-        color: "#fff",
+        color: colors.light,
         fontWeight: "600",
         fontSize: 15,
     },
 
     link: {
-        color: "#9146FF",
+        color: colors.accent,
         fontWeight: "500",
     },
 });

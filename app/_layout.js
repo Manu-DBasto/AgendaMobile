@@ -6,6 +6,7 @@ import { Drawer } from "expo-router/drawer";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
 import React from "react";
+import { colors } from "@/assets/utilities/colors";
 
 export default function Layout() {
     return (
@@ -14,9 +15,9 @@ export default function Layout() {
                 <Drawer
                     screenOptions={{
                         headerStyle: {
-                            backgroundColor: "#9146FF",
+                            backgroundColor: colors.secondary,
                         },
-                        headerTintColor: "#fff",
+                        headerTintColor: colors.onSecondary,
                         headerTitleStyle: {
                             fontWeight: "bold",
                         },
@@ -79,7 +80,7 @@ function CustomDrawerContent(props) {
             )}
 
             {isAuthenticated && (
-                <TouchableOpacity onPress={logout} style={style.options}>
+                <TouchableOpacity onPress={logout} style={style.logoutOption}>
                     <Text style={style.logout}>Cerrar sesión</Text>
                 </TouchableOpacity>
             )}
@@ -92,21 +93,31 @@ const style = StyleSheet.create({
         flex: 1,
         padding: 20,
         gap: 20,
+        backgroundColor: colors.background,
+        borderRadius: 20,
     },
     options: {
         borderTopWidth: 1,
         borderBottomWidth: 1,
-        borderColor: "#f4edff",
+        borderColor: "#e8ebf0",
     },
     textOptions: {
         fontWeight: "600",
         fontSize: 16,
         padding: 10,
+        color: colors.onAccent,
     },
     logout: {
-        color: "#CB413F",
+        color: colors.error,
         fontWeight: "600",
         fontSize: 16,
         padding: 10,
+    },
+
+    logoutOption: {
+        borderTopWidth: 1,
+        borderBottomWidth: 1,
+        borderColor: "#e8ebf0",
+        marginTop: "auto",
     },
 });
