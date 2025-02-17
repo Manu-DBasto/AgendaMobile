@@ -5,6 +5,10 @@ import {
     getUsers,
     deleteUser,
     updateUser,
+    getGroups,
+    createGroup,
+    editGroup,
+    deleteGroup,
 } from "./database.js";
 import cors from "cors";
 
@@ -92,6 +96,60 @@ app.delete("/users/:id", async (req, res) => {
         res.status(200).json({ message: "Usuario eliminado correctamente" });
     } catch (error) {
         res.status(500).json({ message: "Error eliminando usuario" });
+    }
+});
+
+//GRUPOS
+app.get("/groups", async (req, res) => {
+    try {
+        const groups = await getGroups();
+
+        res.status(200).send(groups);
+    } catch (error) {
+        res.status(500).json({ message: "Error obteniendo los grupos" });
+    }
+});
+
+app.post("/createGroup", async (req, res) => {
+    try {
+        const { nombre_grupo, carrera, numero_alumnos } = req.body;
+        const group = await createGroup(nombre_grupo, carrera, numero_alumnos);
+        res.status(201).json({
+            message: "Grupo creado exitosamente",
+            group,
+        });
+    } catch (error) {
+        res.status(400).json({
+            message: error.message,
+            error: error.message,
+        });
+    }
+});
+
+app.put("/groups/:id", async (req, res) => {
+    try {
+        const { id_grupo, nombre_grupo, carrera, numero_alumnos, estado } =
+            req.body;
+        await editGroup(
+            id_grupo,
+            nombre_grupo,
+            carrera,
+            numero_alumnos,
+            estado
+        );
+        res.status(200).json({ message: "Grupo actualizado correctamente" });
+    } catch (error) {
+        res.status(500).json({ message: "Error actualizando grupo" });
+    }
+});
+
+app.delete("/groups/:id", async (req, res) => {
+    try {
+        const { id_grupo } = req.body;
+        await deleteGroup(id_grupo);
+        res.status(200).json({ message: "Grupo eliminado correctamente" });
+    } catch (error) {
+        res.status(500).json({ message: "Error eliminando grupo" });
     }
 });
 

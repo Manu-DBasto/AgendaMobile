@@ -66,3 +66,41 @@ export async function updateUser(id, name, email, phone, subject, rol, state) {
 export async function deleteUser(id) {
     await pool.query("DELETE FROM usuarios WHERE id_usuario = ?", [id]);
 }
+
+//GRUPOS
+export async function getGroups() {
+    const [rows] = await pool.query("SELECT * FROM grupos");
+    console.log(rows);
+    return rows;
+}
+
+export async function createGroup(nombre_grupo, carrera, numero_alumnos) {
+    const estado = 1;
+    const [result] = await pool.query(
+        "INSERT INTO grupos (nombre_grupo, carrera, numero_alumnos, estado) VALUES (?,?,?,?)",
+        [nombre_grupo, carrera, numero_alumnos, estado]
+    );
+    return result;
+}
+
+// export async function getGroup(id) {
+//     const [rows] = await pool.query("SELECT * FROM grupos WHERE id= ?", [id]);
+//     return rows;
+// }
+
+export async function editGroup(
+    id,
+    nombre_grupo,
+    carrera,
+    numero_alumnos,
+    estado
+) {
+    await pool.query(
+        "UPDATE grupos SET nombre_grupo = ?, carrera = ?, numero_alumnos = ?, estado = ? WHERE id_grupo = ?",
+        [nombre_grupo, carrera, numero_alumnos, estado, id]
+    );
+}
+
+export async function deleteGroup(id) {
+    await pool.query("DELETE FROM grupos WHERE id_grupo= ?", [id]);
+}

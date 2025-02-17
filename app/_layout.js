@@ -51,6 +51,11 @@ export default function Layout() {
                         name="home/users"
                         options={{ title: "Usuarios" }}
                     />
+
+                    <Drawer.Screen
+                        name="home/groups"
+                        options={{ title: "Grupos" }}
+                    />
                 </Drawer>
             </GestureHandlerRootView>
         </AuthProvider>
@@ -78,6 +83,13 @@ function CustomDrawerContent(props) {
                     <Text style={style.textOptions}>Usuarios</Text>
                 </TouchableOpacity>
             )}
+
+            <TouchableOpacity
+                onPress={() => navigation.navigate("home/groups")}
+                style={style.options}
+            >
+                <Text style={style.textOptions}>Grupos</Text>
+            </TouchableOpacity>
 
             {isAuthenticated && (
                 <TouchableOpacity onPress={logout} style={style.logoutOption}>
