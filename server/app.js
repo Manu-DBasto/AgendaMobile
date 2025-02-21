@@ -1,5 +1,5 @@
 import express from "express";
-import { login, registerUser, getHorarios } from "./database.js";
+import { login, registerUser, getHorarios, getUsuarios, getGrupos } from "./database.js";
 import cors from "cors";
 
 const app = express();
@@ -55,6 +55,34 @@ app.post("/horario", async (req, res) => {
         });
     }
 });
+
+app.post("/usuarios", async (req, res) => {
+    try {
+        const usuarios = await getUsuarios();
+        res.status(200).json({ message: "Usuarios obtenidos correctamente", usuarios });
+    } catch (error) {
+        console.error("Error al obtener los usuarios:", error);
+        res.status(401).json({
+            message: error.message,
+            error: error.message,
+        });
+    }
+});
+
+
+app.post("/grupos", async (req, res) => {
+    try {
+        const grupos = await getGrupos();
+        res.status(200).json({ message: "Grupos obtenidos correctamente", grupos });
+    } catch (error) {
+        console.error("Error al obtener los grupos:", error);
+        res.status(401).json({
+            message: error.message,
+            error: error.message,
+        });
+    }
+});
+
 
 app.listen(8080, () => {
     console.log("Server running on port 8080");
