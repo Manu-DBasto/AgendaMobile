@@ -51,8 +51,11 @@ export async function registerUser(name, email, password, phone, subject) {
     return result;
 }
 
-export async function getUsers() {
-    const [rows] = await pool.query("SELECT * FROM usuarios");
+export async function getUsers(search = "") {
+    const [rows] = await pool.query(
+        `SELECT * FROM usuarios WHERE nombre_usuario LIKE ? OR email LIKE ? OR telefono LIKE ?`,
+        [`%${search}%`, `%${search}%`, `%${search}%`]
+    ); //En caso de ser vacio, se envia la busqueda como "...LIKE '%%'..."
     return rows;
 }
 
@@ -68,8 +71,11 @@ export async function deleteUser(id) {
 }
 
 //GRUPOS
-export async function getGroups() {
-    const [rows] = await pool.query("SELECT * FROM grupos");
+export async function getGroups(search = "") {
+    const [rows] = await pool.query(
+        "SELECT * FROM grupos WHERE nombre_grupo LIKE ? OR carrera LIKE ? OR numero_alumnos LIKE ?",
+        [`%${search}%`, `%${search}%`, `%${search}%`]
+    );
     console.log(rows);
     return rows;
 }

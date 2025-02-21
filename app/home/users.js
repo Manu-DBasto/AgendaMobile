@@ -17,14 +17,17 @@ export default function Users() {
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [isModalVisible, setModalVisible] = useState(false);
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
-        fetchUsers();
-    }, []);
+        fetchUsers(search);
+    }, [search]);
 
-    const fetchUsers = async () => {
+    const fetchUsers = async (search = "") => {
         try {
-            const response = await fetch(`${config.serverUrl}/users`);
+            const response = await fetch(
+                `${config.serverUrl}/users?search=${search}`
+            );
             const data = await response.json();
             setUsers(data);
         } catch (error) {
@@ -70,9 +73,18 @@ export default function Users() {
         <View style={styles.container}>
             <Text style={styles.title}>Gestión de Usuarios</Text>
             <Text style={styles.instruction}>
-                Toque sobre uno de los usuarios.
+                Toque o haga clic en un registro para editar.
             </Text>
+
             <DataTable style={styles.tableContainer}>
+                <View style={styles.searchContainer}>
+                    <TextInput
+                        style={styles.inputSearch}
+                        placeholder="Buscar..."
+                        value={search}
+                        onChangeText={setSearch}
+                    />
+                </View>
                 <DataTable.Header>
                     <DataTable.Title>Nombre</DataTable.Title>
                     <DataTable.Title>Email</DataTable.Title>
@@ -292,7 +304,27 @@ const styles = StyleSheet.create({
     },
     tableRowsecond: {
         borderColor: colors.accent,
-        backgroundColor: colors.background,
+        backgroundColor: "#e8f3f5",
+    },
+
+    searchContainer: {
+        padding: 10,
+        width: "100%",
+        alignItems: "flex-end",
+    },
+
+    inputSearch: {
+        borderWidth: 1,
+        padding: 5,
+        borderRadius: 10,
+        width: 200,
+        borderColor: colors.secondary,
+        color: colors.onAccent,
+        backgroundColor: colors.light,
+    },
+
+    tableTitle: {
+        color: colors.dark,
     },
 
     dataText: { color: colors.onAccent },

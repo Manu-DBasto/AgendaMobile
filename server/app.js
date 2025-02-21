@@ -55,8 +55,8 @@ app.post("/login", async (req, res) => {
 //USUARIOS
 app.get("/users", async (req, res) => {
     try {
-        const users = await getUsers();
-
+        const search = req.query.search || "";
+        const users = await getUsers(search);
         res.status(200).send(users);
     } catch (error) {
         res.status(500).json({ message: "Error obteniendo usuarios" });
@@ -102,7 +102,8 @@ app.delete("/users/:id", async (req, res) => {
 //GRUPOS
 app.get("/groups", async (req, res) => {
     try {
-        const groups = await getGroups();
+        const search = req.query.search || "";
+        const groups = await getGroups(search);
 
         res.status(200).send(groups);
     } catch (error) {
@@ -154,5 +155,5 @@ app.delete("/groups/:id", async (req, res) => {
 });
 
 app.listen(8080, () => {
-    console.log("Server running on port 8080");
+    console.log("El server ya arrancó en el puerto 8080");
 });
