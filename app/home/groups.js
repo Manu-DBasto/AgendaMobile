@@ -69,6 +69,22 @@ export default function Groups() {
         }
     };
 
+    const addGroup = async () => {
+        if (!selectedGroup) return;
+        try {
+            await fetch(`${config.serverUrl}/createGroup`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(selectedGroup),
+            });
+            fetchGroups(); // Recargar la lista de grupos
+            setModalVisible(false);
+        } catch (error) {
+            console.error("Error adding group:", error);
+            alert(error);
+        }
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Gestión de Grupos</Text>
@@ -84,8 +100,18 @@ export default function Groups() {
                         onChangeText={setSearch}
                     />
                 </View>
+                <TouchableOpacity
+                    onPress={() => {
+                        setSelectedGroup(null);
+                        setModalVisible(true);
+                        console.log(selectedGroup);
+                    }}
+                    style={styles.addButton}
+                >
+                    <Text style={styles.buttonText}>Agregar grupo</Text>
+                </TouchableOpacity>
                 <DataTable.Header>
-                    <DataTable.Title>Carrera</DataTable.Title>
+                    <DataTable.Title>Carreras</DataTable.Title>
                     <DataTable.Title>Grado y grupo</DataTable.Title>
                     <DataTable.Title>Alumnos</DataTable.Title>
                 </DataTable.Header>
@@ -213,7 +239,9 @@ export default function Groups() {
 
                         <TouchableOpacity
                             style={[styles.button, styles.save]}
-                            onPress={handleEdit}
+                            onPress={
+                                selectedGroup?.id_grupo ? handleEdit : addGroup
+                            }
                         >
                             <Text style={styles.buttonText}>Guardar</Text>
                         </TouchableOpacity>
@@ -282,6 +310,13 @@ const styles = StyleSheet.create({
 
     dataText: { color: colors.onAccent },
 
+    addButton: {
+        backgroundColor: colors.primary,
+        padding: 10,
+        borderRadius: 5,
+        width: "100%",
+    },
+
     //Estilos del modal
     modalContainer: {
         justifyContent: "center",
@@ -346,5 +381,6 @@ const styles = StyleSheet.create({
     buttonText: {
         color: colors.light,
         fontWeight: "bold",
+        textAlign: "center",
     },
 });
