@@ -145,7 +145,16 @@ export default function Horario() {
             };
         }),
     }));
-
+    const handleCellPress = (item, index) => {
+        setSelectedCell({ item, index });
+        setShowModal(true);
+    };
+const handleDelete=()=>{
+    console.log("eliminar");
+}    
+const handleSave=()=>{
+    console.log("guardar");
+}  
     return (
         <View style={styles.container}>
             <ScrollView horizontal={!isDesktop} style={styles.scrollView}>
