@@ -219,6 +219,39 @@ export async function upHorario(hora_inicio, hora_fin, dia, id_usuario, id_grupo
     } catch (error) {
         console.error("Error al insertar o actualizar el horario:", error);
         throw error;
+    } 
+}
+export async function upSolicitud(hora_inicio, hora_fin, dia, id_solicitante, id_grupo_nuevo, descripcion, estado = "Pendiente") {
+    try {
+        // Verificar si ya existe una solicitud con la misma hora de inicio y fin en el mismo día
+        const [existing] = await pool.query(`
+            SELECT id_solicitud FROM solicitudes 
+            WHERE hora_inicio = ? AND hora_fin = ? AND dia = ?
+        `, [hora_inicio, hora_fin, dia]);
+
+        if (existing.length > 0) {
+            // Si ya existe, actualizar los datos
+            const id_solicitud = existing[0].id_solicitud;
+            const [updateResult] = await pool.query(`
+                UPDATE solicitudes 
+                SET id_solicitante = ?, id_grupo_nuevo = ?, descripcion = ?, estado = ?
+                WHERE id_solicitud = ?
+            `, [id_solicitante, id_grupo_nuevo, descripcion, estado, id_solicitud]);
+
+            return { success: true, message: "Solicitud actualizada correctamente." };
+        } else {
+            // Si no existe, crear una nueva solicitud con estado por defecto "Pendiente"
+            const [insertResult] = await pool.query(`
+                INSERT INTO solicitudes (hora_inicio, hora_fin, dia, id_solicitante, id_grupo_nuevo, descripcion, estado) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            `, [hora_inicio, hora_fin, dia, id_solicitante, id_grupo_nuevo, descripcion, estado]);
+
+            return { success: true, message: "Solicitud creada correctamente.", id_solicitud: insertResult.insertId };
+        }
+    } catch (error) {
+        console.error("Error al insertar o actualizar la solicitud:", error);
+        throw error;
     }
 }
+
 

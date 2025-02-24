@@ -47,12 +47,13 @@ CREATE TABLE horario_historial (
 
 CREATE TABLE solicitudes (
     id_solicitud INT AUTO_INCREMENT PRIMARY KEY,
-    id_horario INT,
+    hora_inicio TIME NOT NULL,
+    hora_fin TIME NOT NULL,
+    dia VARCHAR(20) NOT NULL,
     id_solicitante INT,
     id_grupo_nuevo INT,
     descripcion TEXT NOT NULL,
     estado VARCHAR(50) NOT NULL,
-    FOREIGN KEY (id_horario) REFERENCES horarios(id_horario) ON DELETE CASCADE,
     FOREIGN KEY (id_solicitante) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (id_grupo_nuevo) REFERENCES grupos(id_grupo) ON DELETE CASCADE
 );

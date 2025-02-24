@@ -191,9 +191,51 @@ export default function Horario() {
         console.log("Hora Inicio:", horaInicio);
         console.log("Hora Fin:", horaFin);
         console.log("Motivo de Solicitud:", motivoSolicitud);
+        
+        // Verificar si los campos obligatorios están completos
+        if (!selectedGrupo || !motivoSolicitud) {
+            alert("Por favor, selecciona un grupo y completa el motivo de la solicitud.");
+            return;
+        }
+    
+        try {
+            // Preparar los datos para la solicitud
+            const requestData = {
+                hora_inicio: horaInicio,
+                hora_fin: horaFin,
+                dia: selectedCell.item.days[selectedCell.index].dia, // Asegúrate de que esta propiedad existe
+                id_solicitante: usuario, // Asumiendo que tienes el usuario disponible
+                id_grupo_nuevo: selectedGrupo,
+                descripcion: motivoSolicitud,
+                estado: "Pendiente", // Estado por defecto
+            };
+    
+            // Realizar la solicitud POST usando el método similar a fetchGrupos
+            const response = await fetch(`${config.serverUrl}/up-solicitud`, {  // Usar config.serverUrl para la URL
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(requestData),
+            });
+    
+            const result = await response.json();
+    
+            if (response.ok) {
+                alert(result.message);
+            } else {
+                alert("Error al procesar la solicitud: " + result.message);
+            }
+        } catch (error) {
+            console.error("Error al guardar la solicitud:", error);
+            alert("Hubo un problema al guardar la solicitud.");
+        }
+    
+        // Cerrar el modal después de guardar
         setShowModal(false);
     };
-
+    
+    
 
 
     return (

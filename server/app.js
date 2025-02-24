@@ -10,7 +10,7 @@ import {
     editGroup,
     deleteGroup,
 
-    getHorarios, getUsuarios, getGrupos, deleteHorario, upHorario
+    getHorarios, getUsuarios, getGrupos, deleteHorario, upHorario, upSolicitud
 } from "./database.js";
 import cors from "cors";
 
@@ -243,6 +243,31 @@ app.post("/up-horario", async (req, res) => {
         });
     }
 });
+app.post("/up-solicitud", async (req, res) => {
+    try {
+        const { hora_inicio, hora_fin, dia, id_solicitante, id_grupo_nuevo, descripcion, estado } = req.body;
+
+        // Validar que los campos obligatorios estén presentes
+        if (!hora_inicio || !hora_fin || !dia || !descripcion) {
+            return res.status(400).json({ message: "Los campos hora_inicio, hora_fin, dia y descripcion son obligatorios." });
+        }
+
+        // Llamar al método upSolicitud para insertar o actualizar
+        const result = await upSolicitud(hora_inicio, hora_fin, dia, id_solicitante, id_grupo_nuevo, descripcion, estado);
+
+        if (result.success) {
+            res.status(200).json({ message: result.message, id_solicitud: result.id_solicitud || null });
+        } else {
+            res.status(500).json({ message: "No se pudo procesar la solicitud." });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Error al insertar o actualizar la solicitud.",
+            error: error.message,
+        });
+    }
+});
+
 
 
 app.listen(8080, () => {
