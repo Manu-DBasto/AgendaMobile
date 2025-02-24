@@ -189,3 +189,36 @@ export async function deleteHorario(id_horario) {
         throw error;
     }
 }
+export async function upHorario(hora_inicio, hora_fin, dia, id_usuario, id_grupo) {
+    try {
+        // Verificar si ya existe un horario con la misma hora de inicio y fin en estado activo
+        const [existing] = await pool.query(`
+            SELECT id_horario FROM horarios 
+            WHERE hora_inicio = ? AND hora_fin = ? AND dia = ? AND estado = 1
+        `, [hora_inicio, hora_fin, dia]);
+
+        if (existing.length > 0) {
+            // Si ya existe, actualizar los datos
+            const id_horario = existing[0].id_horario;
+            const [updateResult] = await pool.query(`
+                UPDATE horarios 
+                SET id_usuario = ?, id_grupo = ?
+                WHERE id_horario = ?
+            `, [id_usuario, id_grupo, id_horario]);
+
+            return { success: true, message: "Horario actualizado correctamente." };
+        } else {
+            // Si no existe, crear uno nuevo
+            const [insertResult] = await pool.query(`
+                INSERT INTO horarios (hora_inicio, hora_fin, dia, id_usuario, id_grupo, estado) 
+                VALUES (?, ?, ?, ?, ?, 1)
+            `, [hora_inicio, hora_fin, dia, id_usuario, id_grupo]);
+
+            return { success: true, message: "Horario creado correctamente.", id_horario: insertResult.insertId };
+        }
+    } catch (error) {
+        console.error("Error al insertar o actualizar el horario:", error);
+        throw error;
+    }
+}
+

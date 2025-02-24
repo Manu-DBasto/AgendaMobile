@@ -6,6 +6,8 @@ const isDesktop = typeof window !== 'undefined' && window.innerWidth > 800;
 
 
 export default function Horario() {
+    const [horaInicio, setHoraInicio] = useState("");
+    const [horaFin, setHoraFin] = useState("");
     const [horarios, setHorarios] = useState([]);
     const [selectedCell, setSelectedCell] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -97,6 +99,10 @@ export default function Horario() {
 
     // Función para convertir la hora (HH:mm:ss) a minutos
     const convertToMinutes = (time) => {
+        if (!time) {
+            console.error("Valor de hora inválido:", time);
+            return NaN;
+        }
         const [hours, minutes] = time.split(":").map(Number);
         return hours * 60 + minutes;
     };
@@ -150,6 +156,11 @@ export default function Horario() {
         setSelectedCell({ item, index });
         setSelectedProfesor(item.days[index].profesorId);
         setSelectedGrupo(item.days[index].grupoId);
+
+        // Agregar las horas al estado del modal
+        setHoraInicio(item.start);
+        setHoraFin(item.end);
+
         setShowModal(true);
     };
 
@@ -192,9 +203,56 @@ export default function Horario() {
         }
     };
 
-    const handleSave = () => {
-        console.log("Guardar");
+    const handleSave = async () => {
+        if (!selectedProfesor || !selectedGrupo || !selectedCell) {
+            alert("Por favor, seleccione un profesor y un grupo.");
+            return;
+        }
+
+        const { item, index } = selectedCell;
+        const day = daysOfWeek[index];
+
+        console.log("item.start:", item.start, "item.end:", item.end); // Verifica estos valores
+
+
+        //const hora_inicio = `${String(Math.floor(item.start / 60)).padStart(2, "0")}:${String(item.start % 60).padStart(2, "0")}:00`;
+        //const hora_fin = `${String(Math.floor(item.end / 60)).padStart(2, "0")}:${String(item.end % 60).padStart(2, "0")}:00`;
+        const hora_inicio = item.start;
+        const hora_fin = item.end;
+
+        console.log("Datos a enviar:", { hora_inicio, hora_fin, dia: day, id_usuario: selectedProfesor, id_grupo: selectedGrupo });
+
+        try {
+            const response = await fetch(`${config.serverUrl}/up-horario`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    hora_inicio,
+                    hora_fin,
+                    dia: day,
+                    id_usuario: selectedProfesor,
+                    id_grupo: selectedGrupo,
+                }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert(result.message);
+                window.location.reload();
+                setShowModal(false); // Cerrar modal si la operación fue exitosa
+            } else {
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error("Error al guardar el horario:", error);
+            alert("Ocurrió un error al guardar el horario.");
+        }
     };
+
+
 
     return (
         <View style={styles.container}>
@@ -264,14 +322,9 @@ export default function Horario() {
                             <Picker.Item key={grupo.id_grupo} label={`${grupo.nombre_grupo} - ${grupo.carrera}`} value={grupo.id_grupo} />
                         ))}
                     </Picker>
+                    <Text>Hora Inicio: {horaInicio}</Text>
+                    <Text>Hora Fin: {horaFin}</Text>
 
-                    <Text>¿Desea cambiar igual el módulo siguiente?</Text>
-                    <TouchableOpacity
-                        style={styles.checkbox}
-                        onPress={() => setNextModuleSame(!nextModuleSame)}
-                    >
-                        <Text>{nextModuleSame ? "✓" : "✘"}</Text>
-                    </TouchableOpacity>
 
                     <View style={styles.buttons}>
                         <Button title="Eliminar" onPress={handleDelete} />

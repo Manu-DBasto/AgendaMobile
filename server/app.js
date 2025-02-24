@@ -10,7 +10,7 @@ import {
     editGroup,
     deleteGroup,
 
-    getHorarios, getUsuarios, getGrupos, deleteHorario
+    getHorarios, getUsuarios, getGrupos, deleteHorario, upHorario
 } from "./database.js";
 import cors from "cors";
 
@@ -218,6 +218,32 @@ app.post("/delete-horario", async (req, res) => {
         });
     }
 });
+
+app.post("/up-horario", async (req, res) => {
+    try {
+        const { hora_inicio, hora_fin, dia, id_usuario, id_grupo } = req.body;
+
+        // Validar que los datos requeridos estén presentes
+        if (!hora_inicio || !hora_fin || !dia) {
+            return res.status(400).json({ message: "Los campos hora_inicio, hora_fin y dia son obligatorios." });
+        }
+
+        // Llamar al método upHorario para insertar o actualizar
+        const result = await upHorario(hora_inicio, hora_fin, dia, id_usuario, id_grupo);
+
+        if (result.success) {
+            res.status(200).json({ message: result.message, id_horario: result.id_horario || null });
+        } else {
+            res.status(500).json({ message: "No se pudo procesar la solicitud." });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Error al insertar o actualizar el horario.",
+            error: error.message,
+        });
+    }
+});
+
 
 app.listen(8080, () => {
     console.log("El server ya arrancó en el puerto 8080");
