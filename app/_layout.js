@@ -60,6 +60,10 @@ export default function Layout() {
                         name="home/groups"
                         options={{ title: "Grupos" }}
                     />
+                    <Drawer.Screen
+                        name="home/uhorario"
+                        options={{ title: "Horario Oficial" }}
+                    />
                 </Drawer>
             </GestureHandlerRootView>
         </AuthProvider>
@@ -78,11 +82,19 @@ function CustomDrawerContent(props) {
             >
                 <Text style={style.textOptions}>Inicio</Text>
             </TouchableOpacity>
+            {userRole === "admin" && (
+                <TouchableOpacity
+                    onPress={() => navigation.navigate("home/horario")}
+                    style={style.options}
+                >
+                    <Text style={style.textOptions}>Horarios</Text>
+                </TouchableOpacity>
+            )}
             <TouchableOpacity
-                onPress={() => navigation.navigate("home/horario")}
+                onPress={() => navigation.navigate("home/uhorario")}
                 style={style.options}
             >
-                <Text style={style.textOptions}>Horarios</Text>
+                <Text style={style.textOptions}>Horario Oficial</Text>
             </TouchableOpacity>
 
             {userRole === "admin" && (
