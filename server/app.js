@@ -1,5 +1,5 @@
 import express from "express";
-import { login, registerUser, getHorarios, getUsuarios, getGrupos } from "./database.js";
+import { login, registerUser, getHorarios, getUsuarios, getGrupos, deleteHorario } from "./database.js";
 import cors from "cors";
 
 const app = express();
@@ -82,6 +82,29 @@ app.post("/grupos", async (req, res) => {
         });
     }
 });
+app.post("/delete-horario", async (req, res) => {
+    try {
+        const { id_horario } = req.body;
+
+        if (!id_horario) {
+            return res.status(400).json({ message: "El id_horario es obligatorio." });
+        }
+
+        const result = await deleteHorario(id_horario);
+
+        if (result.success) {
+            res.status(200).json({ message: result.message });
+        } else {
+            res.status(404).json({ message: result.message });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Error al eliminar el horario.",
+            error: error.message,
+        });
+    }
+});
+
 
 
 app.listen(8080, () => {

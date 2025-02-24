@@ -69,6 +69,11 @@ export async function getHorarios() {
             WHERE h.estado = 1
         `);
 
+
+     
+
+        
+
         return rows;
     } catch (error) {
         console.error("Error al obtener los horarios:", error);
@@ -105,5 +110,24 @@ export async function getGrupos() {
         throw error;
     }
 }
+export async function deleteHorario(id_horario) {
+    try {
+        const [result] = await pool.query(`
+            UPDATE horarios 
+            SET estado = 0 
+            WHERE id_horario = ? AND estado = 1
+        `, [id_horario]);
+
+        if (result.affectedRows > 0) {
+            return { success: true, message: "Horario eliminado correctamente." };
+        } else {
+            return { success: false, message: "No se encontró el horario o ya estaba desactivado." };
+        }
+    } catch (error) {
+        console.error("Error al eliminar el horario:", error);
+        throw error;
+    }
+}
+
 
 

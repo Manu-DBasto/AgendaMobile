@@ -1,9 +1,9 @@
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, useWindowDimensions, Modal, TextInput, Button, Picker } from "react-native";
 import config from "@/components/config";
 import { useState, useEffect } from "react";
-
-// Condicional para verificar si estamos en un entorno web o móvil
 const isDesktop = typeof window !== 'undefined' && window.innerWidth > 800;
+
+
 
 export default function Horario() {
     const [horarios, setHorarios] = useState([]);
@@ -95,6 +95,12 @@ export default function Horario() {
         }
     };
 
+    // Función para convertir la hora (HH:mm:ss) a minutos
+    const convertToMinutes = (time) => {
+        const [hours, minutes] = time.split(":").map(Number);
+        return hours * 60 + minutes;
+    };
+
     let schedule = [];
     let time = startTime;
     while (time + moduleDuration <= endTime) {
@@ -117,41 +123,77 @@ export default function Horario() {
         }
     }
 
-    const fullSchedule = schedule.map((mod) => {
-        const startFormatted = `${String(Math.floor(mod.start / 60)).padStart(2, "0")}:${(mod.start % 60).toString().padStart(2, "0")}:00`;
-        const endFormatted = `${String(Math.floor(mod.end / 60)).padStart(2, "0")}:${(mod.end % 60).toString().padStart(2, "0")}`;
+    const fullSchedule = schedule.map((mod) => ({
+        start: `${Math.floor(mod.start / 60)}:${(mod.start % 60).toString().padStart(2, "0")}`,
+        end: `${Math.floor(mod.end / 60)}:${(mod.end % 60).toString().padStart(2, "0")}`,
+        isBreak: mod.isBreak,
+        days: daysOfWeek.map((day) => {
+            const horario = horarios.find(h =>
+                h.dia === day &&
+                convertToMinutes(h.hora_inicio) === mod.start &&
+                convertToMinutes(h.hora_fin) === mod.end
+            );
+            return {
+                id: horario ? horario.id_horario : null,
+                profesorId: horario ? horario.profesor || "Libre" : "Libre",
+                grupoId: horario ? horario.grupo || "Libre" : "Libre",
+                estado: horario ? horario.estado : 1,
+                dia: horario ? horario.dia : day,
+                carrera: horario ? horario.carrera : "",
+                isBreak: mod.isBreak,
+            };
+        }),
+    }));
 
-        return {
-            start: startFormatted.slice(0, -3),
-            end: endFormatted,
-            isBreak: mod.isBreak,
-            days: daysOfWeek.map((day) => {
-                const horario = horarios.find(h => h.dia === day && h.hora_inicio === startFormatted);
-                return {
-                    profesor: horario ? horario.profesor || "Libre" : "Libre",
-                    grupo: horario ? horario.grupo || "Libre" : "Libre",
-                    carrera: horario ? horario.carrera || "Sin carrera" : "Sin carrera",
-                    isBreak: mod.isBreak,
-                };
-            }),
-        };
-    });
 
-    const handleCellPress = (mod, dayIndex) => {
-        setSelectedCell(mod.days[dayIndex]);
-        setSelectedProfesor(mod.days[dayIndex].profesor || "");
-        setSelectedGrupo(mod.days[dayIndex].grupo || "");
+    const handleCellPress = (item, index) => {
+        setSelectedCell({ item, index });
+        setSelectedProfesor(item.days[index].profesorId);
+        setSelectedGrupo(item.days[index].grupoId);
         setShowModal(true);
     };
 
-    const handleSave = () => {
-        // Save logic here
-        setShowModal(false);
+
+    const handleDelete = async () => {
+        if (!selectedCell || !selectedCell.item || selectedCell.index === undefined) {
+            alert("Seleccione una celda válida.");
+            return;
+        }
+
+        const horarioId = selectedCell.item.days[selectedCell.index].id;
+        if (!horarioId) {
+            alert("No hay un horario para eliminar.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${config.serverUrl}/delete-horario`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id_horario: horarioId })
+            });
+
+
+
+            const data = await response.json();
+            console.log(data);  // Verifica lo que está devolviendo el servidor
+            if (response.ok) {
+                alert("Horario eliminado correctamente.");
+                window.location.reload(); // Recarga la página completa
+
+            } else {
+                alert(data.message);
+            }
+
+        } catch (error) {
+            alert("No se pudo eliminar el horario.");
+        }
     };
 
-    const handleDelete = () => {
-        // Delete logic here
-        setShowModal(false);
+    const handleSave = () => {
+        console.log("Guardar");
     };
 
     return (
@@ -178,9 +220,9 @@ export default function Horario() {
                                         style={[styles.cell, day.isBreak && styles.breakCell]}
                                         disabled={day.isBreak}
                                     >
-                                        <Text style={styles.professorText}>{day.isBreak ? "Descanso" : `Prof: ${day.profesor}`}</Text>
-                                        <Text style={styles.groupText}>{day.isBreak ? "" : `Grupo: ${day.grupo}`}</Text>
-                                        <Text style={styles.careerText}>{day.isBreak ? "" : `Carrera: ${day.carrera}`}</Text>
+                                        <Text style={styles.professorText}>{day.isBreak ? "Descanso" : `Prof: ${day.profesorId}`}</Text>
+                                        <Text style={styles.groupText}>{day.isBreak ? "" : `Grupo: ${day.grupoId}`}</Text>
+                                        <Text style={styles.groupText}>Carrera: {day.carrera}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </View>
