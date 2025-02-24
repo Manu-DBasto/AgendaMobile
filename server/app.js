@@ -9,6 +9,8 @@ import {
     createGroup,
     editGroup,
     deleteGroup,
+
+    getHorarios, getUsuarios, getGrupos, deleteHorario
 } from "./database.js";
 import cors from "cors";
 
@@ -151,6 +153,69 @@ app.delete("/groups/:id", async (req, res) => {
         res.status(200).json({ message: "Grupo eliminado correctamente" });
     } catch (error) {
         res.status(500).json({ message: "Error eliminando grupo" });
+    }
+});
+
+
+app.post("/horario", async (req, res) => {
+    try {
+        const horario = await getHorarios();
+        res.status(200).json({ message: "Horarios obtenidos correctamente", horario });
+    } catch (error) {
+        console.error("Error al obtener los horarios:", error);
+        res.status(401).json({
+            message: error.message,
+            error: error.message,
+        });
+    }
+});
+
+app.post("/usuarios", async (req, res) => {
+    try {
+        const usuarios = await getUsuarios();
+        res.status(200).json({ message: "Usuarios obtenidos correctamente", usuarios });
+    } catch (error) {
+        console.error("Error al obtener los usuarios:", error);
+        res.status(401).json({
+            message: error.message,
+            error: error.message,
+        });
+    }
+});
+
+
+app.post("/grupos", async (req, res) => {
+    try {
+        const grupos = await getGrupos();
+        res.status(200).json({ message: "Grupos obtenidos correctamente", grupos });
+    } catch (error) {
+        console.error("Error al obtener los grupos:", error);
+        res.status(401).json({
+            message: error.message,
+            error: error.message,
+        });
+    }
+});
+app.post("/delete-horario", async (req, res) => {
+    try {
+        const { id_horario } = req.body;
+
+        if (!id_horario) {
+            return res.status(400).json({ message: "El id_horario es obligatorio." });
+        }
+
+        const result = await deleteHorario(id_horario);
+
+        if (result.success) {
+            res.status(200).json({ message: result.message });
+        } else {
+            res.status(404).json({ message: result.message });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Error al eliminar el horario.",
+            error: error.message,
+        });
     }
 });
 

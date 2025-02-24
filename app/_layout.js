@@ -46,6 +46,10 @@ export default function Layout() {
                         name="home/home"
                         options={{ title: "Inicio" }}
                     />
+                    <Drawer.Screen
+                        name="home/horario"
+                        options={{ title: "Horarios" }}
+                    />
 
                     <Drawer.Screen
                         name="home/users"
@@ -73,6 +77,12 @@ function CustomDrawerContent(props) {
                 style={style.options}
             >
                 <Text style={style.textOptions}>Inicio</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                onPress={() => navigation.navigate("home/horario")}
+                style={style.options}
+            >
+                <Text style={style.textOptions}>Horarios</Text>
             </TouchableOpacity>
 
             {userRole === "admin" && (

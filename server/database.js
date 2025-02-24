@@ -110,3 +110,82 @@ export async function editGroup(
 export async function deleteGroup(id) {
     await pool.query("DELETE FROM grupos WHERE id_grupo= ?", [id]);
 }
+
+
+export async function getHorarios() {
+    try {
+        const [rows] = await pool.query(`
+            SELECT 
+                h.id_horario,
+                h.hora_inicio,
+                h.hora_fin,
+                h.dia,
+                u.nombre_usuario AS profesor,
+                g.nombre_grupo AS grupo,
+                g.carrera,
+                h.estado
+            FROM horarios h
+            LEFT JOIN usuarios u ON h.id_usuario = u.id_usuario
+            LEFT JOIN grupos g ON h.id_grupo = g.id_grupo
+            WHERE h.estado = 1
+        `);
+
+
+
+
+
+
+        return rows;
+    } catch (error) {
+        console.error("Error al obtener los horarios:", error);
+        throw error;
+    }
+}
+
+
+
+export async function getUsuarios() {
+    try {
+        const [rows] = await pool.query(`
+            SELECT * FROM usuarios WHERE estado = 1
+        `);
+
+        return rows;
+    } catch (error) {
+        console.error("Error al obtener los usuarios:", error);
+        throw error;
+    }
+}
+
+
+
+export async function getGrupos() {
+    try {
+        const [rows] = await pool.query(`
+            SELECT * FROM grupos WHERE estado = 1
+        `);
+
+        return rows;
+    } catch (error) {
+        console.error("Error al obtener los grupos:", error);
+        throw error;
+    }
+}
+export async function deleteHorario(id_horario) {
+    try {
+        const [result] = await pool.query(`
+            UPDATE horarios 
+            SET estado = 0 
+            WHERE id_horario = ? AND estado = 1
+        `, [id_horario]);
+
+        if (result.affectedRows > 0) {
+            return { success: true, message: "Horario eliminado correctamente." };
+        } else {
+            return { success: false, message: "No se encontró el horario o ya estaba desactivado." };
+        }
+    } catch (error) {
+        console.error("Error al eliminar el horario:", error);
+        throw error;
+    }
+}
