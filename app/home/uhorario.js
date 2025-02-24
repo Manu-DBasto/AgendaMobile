@@ -1,14 +1,17 @@
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, useWindowDimensions, Modal, TextInput, Button, Picker } from "react-native";
 import config from "@/components/config";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { AuthContext } from "@/context/authContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const isDesktop = typeof window !== 'undefined' && window.innerWidth > 800;
 
 
 
 export default function Horario() {
+    const [usuario, setUsuario] = useState("");
     const [horaInicio, setHoraInicio] = useState("");
     const [horaFin, setHoraFin] = useState("");
-    
+    const [motivoSolicitud, setMotivoSolicitud] = useState("");
     const [horarios, setHorarios] = useState([]);
     const [selectedCell, setSelectedCell] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -153,105 +156,42 @@ export default function Horario() {
     }));
 
 
+    useEffect(() => {
+        const checkSession = async () => {
+            try {
+                const userSession = await AsyncStorage.getItem("userSession");
+                console.log(userSession)
+                if (userSession) {
+                    const user = JSON.parse(userSession); // Convertir a objeto
+                    setUsuario(user.id_usuario); // Acceder correctamente a id_usuario
+                }
+            } catch (error) {
+                console.error("Error al obtener la sesión:", error);
+            }
+        };
+
+        checkSession();
+    }, []);
+
     const handleCellPress = (item, index) => {
         setSelectedCell({ item, index });
-        setid(item.id)
-        setSelectedProfesor(item.days[index].profesorId);
         setSelectedGrupo(item.days[index].grupoId);
-
-        // Agregar las horas al estado del modal
         setHoraInicio(item.start);
         setHoraFin(item.end);
-
+        setMotivoSolicitud("");  // Limpiar el campo de motivo
         setShowModal(true);
     };
 
 
-    const handleDelete = async () => {
-        if (!selectedCell || !selectedCell.item || selectedCell.index === undefined) {
-            alert("Seleccione una celda válida.");
-            return;
-        }
-
-        const horarioId = selectedCell.item.days[selectedCell.index].id;
-        if (!horarioId) {
-            alert("No hay un horario para eliminar.");
-            return;
-        }
-
-        try {
-            const response = await fetch(`${config.serverUrl}/delete-horario`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ id_horario: horarioId })
-            });
-
-
-
-            const data = await response.json();
-            console.log(data);  // Verifica lo que está devolviendo el servidor
-            if (response.ok) {
-                alert("Horario eliminado correctamente.");
-                window.location.reload(); // Recarga la página completa
-
-            } else {
-                alert(data.message);
-            }
-
-        } catch (error) {
-            alert("No se pudo eliminar el horario.");
-        }
-    };
-
     const handleSave = async () => {
-        if (!selectedProfesor || !selectedGrupo || !selectedCell) {
-            alert("Por favor, seleccione un profesor y un grupo.");
-            return;
-        }
-
-        const { item, index } = selectedCell;
-        const day = daysOfWeek[index];
-
-        console.log("item.start:", item.start, "item.end:", item.end); // Verifica estos valores
-
-
-        //const hora_inicio = `${String(Math.floor(item.start / 60)).padStart(2, "0")}:${String(item.start % 60).padStart(2, "0")}:00`;
-        //const hora_fin = `${String(Math.floor(item.end / 60)).padStart(2, "0")}:${String(item.end % 60).padStart(2, "0")}:00`;
-        const hora_inicio = item.start;
-        const hora_fin = item.end;
-
-        console.log("Datos a enviar:", { hora_inicio, hora_fin, dia: day, id_usuario: selectedProfesor, id_grupo: selectedGrupo });
-
-        try {
-            const response = await fetch(`${config.serverUrl}/up-horario`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    hora_inicio,
-                    hora_fin,
-                    dia: day,
-                    id_usuario: selectedProfesor,
-                    id_grupo: selectedGrupo,
-                }),
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert(result.message);
-                window.location.reload();
-                setShowModal(false); // Cerrar modal si la operación fue exitosa
-            } else {
-                alert(`Error: ${result.message}`);
-            }
-        } catch (error) {
-            console.error("Error al guardar el horario:", error);
-            alert("Ocurrió un error al guardar el horario.");
-        }
+        console.log("Guardar");
+        console.log("Grupo Nuevo:", selectedGrupo);
+        console.log("Celda", selectedCell);
+        console.log("Usuario", usuario);
+        console.log("Hora Inicio:", horaInicio);
+        console.log("Hora Fin:", horaFin);
+        console.log("Motivo de Solicitud:", motivoSolicitud);
+        setShowModal(false);
     };
 
 
@@ -299,19 +239,7 @@ export default function Horario() {
                 style={styles.modal}
             >
                 <View style={[styles.modalContent, isDesktop && styles.modalDesktop]}>
-                    <Text style={styles.modalTitle}>Editar Horario</Text>
-
-                    <Text>Profesor Nuevo:</Text>
-                    <Picker
-                        selectedValue={selectedProfesor}
-                        style={styles.input}
-                        onValueChange={(itemValue) => setSelectedProfesor(itemValue)}
-                    >
-                        <Picker.Item label="Seleccionar Profesor" value="" />
-                        {profesores.map(profesor => (
-                            <Picker.Item key={profesor.id_usuario} label={profesor.nombre_usuario} value={profesor.id_usuario} />
-                        ))}
-                    </Picker>
+                    <Text style={styles.modalTitle}>Solicitar Horario</Text>
 
                     <Text>Grupo Nuevo:</Text>
                     <Picker
@@ -324,16 +252,21 @@ export default function Horario() {
                             <Picker.Item key={grupo.id_grupo} label={`${grupo.nombre_grupo} - ${grupo.carrera}`} value={grupo.id_grupo} />
                         ))}
                     </Picker>
+
                     <Text>Hora Inicio: {horaInicio}</Text>
                     <Text>Hora Fin: {horaFin}</Text>
-                    <Text>Hora Fin: {id}</Text>
 
+                    <Text>Motivo de Solicitud:</Text>
+                    <TextInput
+                        value={motivoSolicitud}
+                        onChangeText={setMotivoSolicitud}
+                        placeholder="Escribe el motivo de la solicitud"
+                        multiline={true}
+                        numberOfLines={4}
+                        style={[styles.input, styles.textArea]}
+                    />
 
-                    <View style={styles.buttons}>
-                        <Button title="Eliminar" onPress={handleDelete} />
-                        <Button title="Guardar" onPress={handleSave} />
-                    </View>
-
+                    <Button title="Solicitar" onPress={handleSave} />
                     <Button title="Cerrar" onPress={() => setShowModal(false)} />
                 </View>
             </Modal>
@@ -451,5 +384,15 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(0, 0, 0, 0.5)", // Fondo semi-transparente
         width: "100%", // Para que ocupe el 100% de la pantalla
         height: "100%", // Para asegurarnos de que ocupe toda la altura
+    },
+    textArea: {
+        width: '100%', // Asegura que ocupe el 100% del ancho disponible
+        padding: 10,
+        marginVertical: 10,
+        borderWidth: 1,
+        borderColor: '#ccc', // Color del borde
+        borderRadius: 5,
+        height: 100, // Ajusta la altura para un campo más extenso
+        textAlignVertical: 'top', // Alineación del texto al principio del campo
     },
 });
