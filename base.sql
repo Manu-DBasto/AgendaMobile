@@ -54,7 +54,6 @@ CREATE TABLE solicitudes (
     id_grupo_nuevo INT,
     descripcion TEXT NOT NULL,
     estado VARCHAR(50) NOT NULL,
-    FOREIGN KEY (id_horario) REFERENCES horarios(id_horario) ON DELETE CASCADE,
     FOREIGN KEY (id_solicitante) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (id_grupo_nuevo) REFERENCES grupos(id_grupo) ON DELETE CASCADE
 );
