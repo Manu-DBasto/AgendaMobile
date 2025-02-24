@@ -1,8 +1,6 @@
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, useWindowDimensions, Modal, TextInput, Button, Picker } from "react-native";
 import config from "@/components/config";
 import { useState, useEffect } from "react";
-
-// Condicional para verificar si estamos en un entorno web o móvil
 const isDesktop = typeof window !== 'undefined' && window.innerWidth > 800;
 
 export default function Horario() {
@@ -95,11 +93,6 @@ export default function Horario() {
         }
     };
 
-    useEffect(() => {
-        pullHorarios();
-    }, []);
-
-
     // Función para convertir la hora (HH:mm:ss) a minutos
     const convertToMinutes = (time) => {
         const [hours, minutes] = time.split(":").map(Number);
@@ -139,22 +132,68 @@ export default function Horario() {
                 convertToMinutes(h.hora_fin) === mod.end
             );
             return {
-                profesorId: horario ? horario.id_usuario || "Libre" : "Libre",
-                grupoId: horario ? horario.id_grupo || "Libre" : "Libre",
+                id: horario ? horario.id_horario : null,
+                profesorId: horario ? horario.profesor || "Libre" : "Libre",
+                grupoId: horario ? horario.grupo || "Libre" : "Libre",
+                estado: horario ? horario.estado : 1,
+                dia: horario ? horario.dia : day,
+                carrera: horario ? horario.carrera : "",
                 isBreak: mod.isBreak,
             };
         }),
     }));
+
+
     const handleCellPress = (item, index) => {
         setSelectedCell({ item, index });
+        setSelectedProfesor(item.days[index].profesorId);
+        setSelectedGrupo(item.days[index].grupoId);
         setShowModal(true);
     };
-const handleDelete=()=>{
-    console.log("eliminar");
-}    
-const handleSave=()=>{
-    console.log("guardar");
-}  
+
+
+    const handleDelete = async () => {
+        if (!selectedCell || !selectedCell.item || selectedCell.index === undefined) {
+            alert("Seleccione una celda válida.");
+            return;
+        }
+
+        const horarioId = selectedCell.item.days[selectedCell.index].id;
+        if (!horarioId) {
+            alert("No hay un horario para eliminar.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${config.serverUrl}/delete-horario`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id_horario: horarioId })
+            });
+
+
+
+            const data = await response.json();
+            console.log(data);  // Verifica lo que está devolviendo el servidor
+            if (response.ok) {
+                alert("Horario eliminado correctamente.");
+                window.location.reload(); // Recarga la página completa
+
+            } else {
+                alert(data.message);
+            }
+
+        } catch (error) {
+            alert("No se pudo eliminar el horario.");
+        }
+    };
+
+    const handleSave = () => {
+        console.log("Guardar");
+    };
+
     return (
         <View style={styles.container}>
             <ScrollView horizontal={!isDesktop} style={styles.scrollView}>
@@ -181,6 +220,7 @@ const handleSave=()=>{
                                     >
                                         <Text style={styles.professorText}>{day.isBreak ? "Descanso" : `Prof: ${day.profesorId}`}</Text>
                                         <Text style={styles.groupText}>{day.isBreak ? "" : `Grupo: ${day.grupoId}`}</Text>
+                                        <Text style={styles.groupText}>Carrera: {day.carrera}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </View>
