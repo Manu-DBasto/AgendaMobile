@@ -194,7 +194,7 @@ export async function upHorario(hora_inicio, hora_fin, dia, id_usuario, id_grupo
         // Verificar si ya existe un horario con la misma hora de inicio y fin en estado activo
         const [existing] = await pool.query(`
             SELECT id_horario FROM horarios 
-            WHERE hora_inicio = ? AND hora_fin = ? AND dia = ? AND estado = 1
+            WHERE hora_inicio = ? AND hora_fin = ? AND dia = ? 
         `, [hora_inicio, hora_fin, dia]);
 
         if (existing.length > 0) {
