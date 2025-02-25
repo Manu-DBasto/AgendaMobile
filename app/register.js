@@ -16,6 +16,7 @@ import { Picker } from "@react-native-picker/picker";
 import { colors } from "@/assets/utilities/colors";
 
 import config from "@/components/config";
+import tursoConfig from "@/components/tursoConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Register() {
@@ -67,6 +68,50 @@ export default function Register() {
                         subject,
                     }),
                 });
+                const data = await response.json();
+
+                if (response.ok) {
+                    router.push("/");
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert("Error al registrar.");
+            }
+        } else {
+            alert("Las contraseñas no coinciden.");
+        }
+    };
+
+    const tursoHandleRegister = async () => {
+        if (!email || !name || !password || !repeatPassword) {
+            alert("Llene los campos antes de enviar el formulario.");
+            return;
+        }
+
+        if (!validateEmail(email)) {
+            alert("Introduzca un correo electrónico válido.");
+            return;
+        }
+
+        if (password === repeatPassword) {
+            try {
+                const response = await fetch(
+                    `${tursoConfig.serverUrl}/register`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            name,
+                            email,
+                            password,
+                            phone,
+                            subject,
+                        }),
+                    }
+                );
                 const data = await response.json();
 
                 if (response.ok) {
@@ -163,7 +208,7 @@ export default function Register() {
                     <View>
                         <TouchableOpacity
                             style={styles.button}
-                            onPress={handleRegister}
+                            onPress={tursoHandleRegister}
                         >
                             <Text style={styles.textButton}>Registrarse</Text>
                         </TouchableOpacity>

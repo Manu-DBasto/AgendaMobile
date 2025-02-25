@@ -10,6 +10,7 @@ import {
 import Modal from "react-native-modal";
 import { DataTable } from "react-native-paper";
 import config from "@/components/config";
+import tursoConfig from "@/components/tursoConfig";
 import { Picker } from "@react-native-picker/picker";
 import { colors } from "@/assets/utilities/colors";
 
@@ -27,6 +28,19 @@ export default function Users() {
         try {
             const response = await fetch(
                 `${config.serverUrl}/users?search=${search}`
+            );
+            const data = await response.json();
+            setUsers(data);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+            alert(error);
+        }
+    };
+
+    const tursoFetchUsers = async (search = "") => {
+        try {
+            const response = await fetch(
+                `${tursoConfig.serverUrl}/users?search=${search}`
             );
             const data = await response.json();
             setUsers(data);
