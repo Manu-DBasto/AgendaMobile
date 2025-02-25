@@ -95,6 +95,56 @@ app.delete("/users/:id", async (req, res) => {
     }
 });
 
+
+app.get("/perfil/:id", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const query = "SELECT id_usuario, nombre_usuario, email, telefono FROM usuarios WHERE id_usuario = ?";
+        const [rows] = await database.query(query, [id]);
+
+        if (rows.length > 0) {
+            res.json(rows[0]); // Devuelve el primer usuario encontrado
+        } else {
+            res.status(404).json({ error: "Usuario no encontrado" });
+        }
+    } catch (error) {
+        console.error("Error obteniendo usuario:", error);
+        res.status(500).json({ error: "Error al obtener usuario" });
+    }
+});
+
+// Actualizar datos del usuario
+app.put("/perfil/:id", async (req, res) => {
+    console.log("Datos recibidos en el backend:", req.body); // 👀 Ver qué llega
+
+    try {
+        const { nombre_usuario, email, telefono, contraseña } = req.body;
+        const { id } = req.params;
+
+        if (!nombre_usuario || !email || !telefono) {
+            return res.status(400).json({ error: "Faltan datos requeridos" });
+        }
+
+        const result = await database.query(
+            "UPDATE usuarios SET nombre_usuario = ?, email = ?, telefono = ?, contraseña = ? WHERE id_usuario = ?",
+            [nombre_usuario, email, telefono, contraseña, id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Usuario no encontrado" });
+        }
+
+        res.json({ message: "Usuario actualizado correctamente" });
+    } catch (error) {
+        console.error("⚠️ Error en el servidor:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+});
+
+
+
+
 app.listen(8080, () => {
     console.log("Server running on port 8080");
 });

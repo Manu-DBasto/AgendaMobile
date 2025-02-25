@@ -8,6 +8,8 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userRole, setUserRole] = useState(null);
+    const [user, setUser] = useState(null);
+
 
     useEffect(() => {
         const checkSession = async () => {
@@ -15,6 +17,7 @@ export const AuthProvider = ({ children }) => {
             if (userSession) {
                 const parsedSession = JSON.parse(userSession);
                 setIsAuthenticated(true);
+                setUser(parsedSession); // 🔹 Guardar usuario en contexto
                 setUserRole(parsedSession.rol);
                 console.log(userSession);
             } else {
@@ -23,7 +26,7 @@ export const AuthProvider = ({ children }) => {
             }
         };
         checkSession();
-    }, []);
+    }, [isAuthenticated]);
 
     const login = async (userData) => {
         await AsyncStorage.setItem("userSession", JSON.stringify(userData));
@@ -40,7 +43,7 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider
-            value={{ isAuthenticated, userRole, login, logout }}
+        value={{ isAuthenticated, user, setUser, userRole, login, logout }} // 🔹 Agregar setUser
         >
             {children}
         </AuthContext.Provider>
