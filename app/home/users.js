@@ -21,9 +21,10 @@ export default function Users() {
     const [search, setSearch] = useState("");
 
     useEffect(() => {
-        fetchUsers(search);
+        tursoFetchUsers(search);
     }, [search]);
 
+    //OBTENER USUARIOS EN BASE DE DATOS NORMAL - TURSO
     const fetchUsers = async (search = "") => {
         try {
             const response = await fetch(
@@ -50,6 +51,7 @@ export default function Users() {
         }
     };
 
+    //EDITAR USUARIOS EN BASE DE DATOS NORMAL - TURSO
     const handleEdit = async () => {
         if (!selectedUser) return;
         console.log(selectedUser);
@@ -67,6 +69,23 @@ export default function Users() {
         }
     };
 
+    const tursoHandleEdit = async () => {
+        if (!selectedUser) return;
+        try {
+            await fetch(`${tursoConfig.serverUrl}/users/${selectedUser.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(selectedUser),
+            });
+            tursoFetchUsers();
+            setModalVisible(false);
+        } catch (error) {
+            console.error("Error updating user:", error);
+            alert(error);
+        }
+    };
+
+    //ELIMINAR USUARIOS EN BASE DE DATOS NORMAL - TURSO
     const handleDelete = async () => {
         if (!selectedUser) return;
         try {
@@ -76,6 +95,22 @@ export default function Users() {
                 body: JSON.stringify(selectedUser),
             });
             fetchUsers();
+            setModalVisible(false);
+        } catch (error) {
+            console.error("Error deleting user:", error);
+            alert(error);
+        }
+    };
+
+    const tursoHandleDelete = async () => {
+        if (!selectedUser) return;
+        try {
+            await fetch(`${tursoConfig.serverUrl}/users/${selectedUser.id}`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(selectedUser),
+            });
+            tursoFetchUsers();
             setModalVisible(false);
         } catch (error) {
             console.error("Error deleting user:", error);
@@ -256,7 +291,7 @@ export default function Users() {
                     <View style={styles.modalButtons}>
                         <TouchableOpacity
                             style={[styles.button, styles.delete]}
-                            onPress={handleDelete}
+                            onPress={tursoHandleDelete}
                         >
                             <Text style={styles.buttonText}>Eliminar</Text>
                         </TouchableOpacity>
@@ -270,7 +305,7 @@ export default function Users() {
 
                         <TouchableOpacity
                             style={[styles.button, styles.save]}
-                            onPress={handleEdit}
+                            onPress={tursoHandleEdit}
                         >
                             <Text style={styles.buttonText}>Guardar</Text>
                         </TouchableOpacity>
