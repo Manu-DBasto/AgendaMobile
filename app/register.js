@@ -97,7 +97,7 @@ export default function Register() {
         if (password === repeatPassword) {
             try {
                 const response = await fetch(
-                    `${tursoConfig.serverUrl}/register`,
+                    `https://tursosv.onrender.com/register`,
                     {
                         method: "POST",
                         headers: {

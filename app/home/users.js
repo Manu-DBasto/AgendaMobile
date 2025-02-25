@@ -41,7 +41,7 @@ export default function Users() {
     const tursoFetchUsers = async (search = "") => {
         try {
             const response = await fetch(
-                `${tursoConfig.serverUrl}/users?search=${search}`
+                `https://tursosv.onrender.com/users?search=${search}`
             );
             const data = await response.json();
             setUsers(data);
@@ -72,11 +72,14 @@ export default function Users() {
     const tursoHandleEdit = async () => {
         if (!selectedUser) return;
         try {
-            await fetch(`${tursoConfig.serverUrl}/users/${selectedUser.id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(selectedUser),
-            });
+            await fetch(
+                `https://tursosv.onrender.com/users/${selectedUser.id}`,
+                {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(selectedUser),
+                }
+            );
             tursoFetchUsers();
             setModalVisible(false);
         } catch (error) {
@@ -105,11 +108,14 @@ export default function Users() {
     const tursoHandleDelete = async () => {
         if (!selectedUser) return;
         try {
-            await fetch(`${tursoConfig.serverUrl}/users/${selectedUser.id}`, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(selectedUser),
-            });
+            await fetch(
+                `https://tursosv.onrender.com/users/${selectedUser.id}`,
+                {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(selectedUser),
+                }
+            );
             tursoFetchUsers();
             setModalVisible(false);
         } catch (error) {

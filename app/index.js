@@ -80,7 +80,7 @@ export default function Login() {
             return;
         }
         try {
-            const response = await fetch(`${tursoConfig.serverUrl}/login`, {
+            const response = await fetch(`https://tursosv.onrender.com/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
