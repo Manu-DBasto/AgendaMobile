@@ -220,7 +220,10 @@ export default function Horario() {
             console.log(data); // Verifica lo que está devolviendo el servidor
             if (response.ok) {
                 alert("Horario eliminado correctamente.");
-                window.location.reload(); // Recarga la página completa
+                pullHorarios();
+                fetchProfesores();
+                fetchGrupos();
+                setShowModal(false);
             } else {
                 alert(data.message);
             }
@@ -275,7 +278,9 @@ export default function Horario() {
 
             if (response.ok) {
                 alert(result.message);
-                window.location.reload();
+                pullHorarios();
+                fetchProfesores();
+                fetchGrupos();
                 setShowModal(false); // Cerrar modal si la operación fue exitosa
             } else {
                 alert(`Error: ${result.message}`);
