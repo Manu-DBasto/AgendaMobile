@@ -20,9 +20,10 @@ export default function Groups() {
     const [search, setSearch] = useState("");
 
     useEffect(() => {
-        fetchGroups(search);
+        tursoFetchGroups(search);
     }, [search]);
 
+    // OBTENER GRUPOS
     const fetchGroups = async () => {
         try {
             const response = await fetch(
@@ -36,6 +37,19 @@ export default function Groups() {
         }
     };
 
+    const tursoFetchGroups = async () => {
+        try {
+            const response = await fetch(
+                `https://tursosv.onrender.com/groups?search=${search}`
+            );
+            const data = await response.json();
+            setGroups(data);
+        } catch (error) {
+            console.error("Error fetching groups:", error);
+            alert(error);
+        }
+    };
+    //EDITAR GRUPOS
     const handleEdit = async () => {
         if (!selectedGroup) return;
         console.log(selectedGroup);
@@ -53,6 +67,27 @@ export default function Groups() {
         }
     };
 
+    const tursoHandleEdit = async () => {
+        if (!selectedGroup) return;
+        console.log(selectedGroup);
+        try {
+            await fetch(
+                `https://tursosv.onrender.com/groups/${selectedGroup.id}`,
+                {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(selectedGroup),
+                }
+            );
+            fetchGroups();
+            setModalVisible(false);
+        } catch (error) {
+            console.error("Error updating group:", error);
+            alert(error);
+        }
+    };
+
+    //ELIMINAR GRUPOS
     const handleDelete = async () => {
         if (!selectedGroup) return;
         try {
@@ -69,10 +104,46 @@ export default function Groups() {
         }
     };
 
+    const tursoHandleDelete = async () => {
+        if (!selectedGroup) return;
+        try {
+            await fetch(
+                `https://tursosv.onrender.com/groups/${selectedGroup.id}`,
+                {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(selectedGroup),
+                }
+            );
+            fetchGroups();
+            setModalVisible(false);
+        } catch (error) {
+            console.error("Error deleting group:", error);
+            alert(error);
+        }
+    };
+
+    //AGREGAR GRUPOS
     const addGroup = async () => {
         if (!selectedGroup) return;
         try {
             await fetch(`${config.serverUrl}/createGroup`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(selectedGroup),
+            });
+            fetchGroups(); // Recargar la lista de grupos
+            setModalVisible(false);
+        } catch (error) {
+            console.error("Error adding group:", error);
+            alert(error);
+        }
+    };
+
+    const tursoAddGroup = async () => {
+        if (!selectedGroup) return;
+        try {
+            await fetch(`https://tursosv.onrender.com/createGroup`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(selectedGroup),
@@ -225,7 +296,7 @@ export default function Groups() {
                     <View style={styles.modalButtons}>
                         <TouchableOpacity
                             style={[styles.button, styles.delete]}
-                            onPress={handleDelete}
+                            onPress={tursoHandleDelete}
                         >
                             <Text style={styles.buttonText}>Eliminar</Text>
                         </TouchableOpacity>
@@ -240,7 +311,9 @@ export default function Groups() {
                         <TouchableOpacity
                             style={[styles.button, styles.save]}
                             onPress={
-                                selectedGroup?.id_grupo ? handleEdit : addGroup
+                                selectedGroup?.id_grupo
+                                    ? tursoHandleEdit
+                                    : tursoAddGroup
                             }
                         >
                             <Text style={styles.buttonText}>Guardar</Text>
