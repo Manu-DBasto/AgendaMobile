@@ -84,16 +84,7 @@ export default function Solicitudes() {
                         onChangeText={setSearch}
                     />
                 </View>
-                <TouchableOpacity
-                    onPress={() => {
-                        setSelectedSolicitud(null);
-                        setModalVisible(true);
-                        console.log(selectedSolicitud);
-                    }}
-                    style={styles.addButton}
-                >
-                    <Text style={styles.buttonText}>Agregar solicitud</Text>
-                </TouchableOpacity>
+
                 <DataTable.Header>
                     <DataTable.Title>Hora Inicio</DataTable.Title>
                     <DataTable.Title>Hora Fin</DataTable.Title>
@@ -153,86 +144,6 @@ export default function Solicitudes() {
             >
                 <View style={styles.modal}>
                     <Text style={styles.title}>Solicitud</Text>
-
-                    <View style={{ gap: 5 }}>
-                        <Text style={styles.label}>Hora de inicio</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={selectedSolicitud?.hora_inicio}
-                            onChangeText={(text) =>
-                                setSelectedSolicitud({
-                                    ...selectedSolicitud,
-                                    hora_inicio: text,
-                                })
-                            }
-                            placeholder="08:00"
-                            editable={false} // Solo visualización
-                        />
-                    </View>
-
-                    <View style={{ gap: 5 }}>
-                        <Text style={styles.label}>Hora de fin</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={selectedSolicitud?.hora_fin}
-                            onChangeText={(text) =>
-                                setSelectedSolicitud({
-                                    ...selectedSolicitud,
-                                    hora_fin: text,
-                                })
-                            }
-                            placeholder="09:00"
-                            editable={false} // Solo visualización
-                        />
-                    </View>
-
-                    <View style={{ gap: 5 }}>
-                        <Text style={styles.label}>Día</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={selectedSolicitud?.dia}
-                            onChangeText={(text) =>
-                                setSelectedSolicitud({
-                                    ...selectedSolicitud,
-                                    dia: text,
-                                })
-                            }
-                            placeholder="Lunes"
-                            editable={false} // Solo visualización
-                        />
-                    </View>
-
-                    <View style={{ gap: 5 }}>
-                        <Text style={styles.label}>Solicitante</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={selectedSolicitud?.solicitante}
-                            onChangeText={(text) =>
-                                setSelectedSolicitud({
-                                    ...selectedSolicitud,
-                                    solicitante: text,
-                                })
-                            }
-                            placeholder="Nombre del solicitante"
-                            editable={false} // Solo visualización
-                        />
-                    </View>
-
-                    <View style={{ gap: 5 }}>
-                        <Text style={styles.label}>Grupo Nuevo</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={selectedSolicitud?.grupo_nuevo}
-                            onChangeText={(text) =>
-                                setSelectedSolicitud({
-                                    ...selectedSolicitud,
-                                    grupo_nuevo: text,
-                                })
-                            }
-                            placeholder="Grupo nuevo"
-                            editable={false} // Solo visualización
-                        />
-                    </View>
 
                     <View style={{ gap: 5 }}>
                         <Text style={styles.label}>Estado</Text>
