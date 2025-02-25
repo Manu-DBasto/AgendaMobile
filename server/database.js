@@ -202,7 +202,7 @@ export async function upHorario(hora_inicio, hora_fin, dia, id_usuario, id_grupo
             const id_horario = existing[0].id_horario;
             const [updateResult] = await pool.query(`
                 UPDATE horarios 
-                SET id_usuario = ?, id_grupo = ?
+                SET id_usuario = ?, id_grupo = ?, estado = 1
                 WHERE id_horario = ?
             `, [id_usuario, id_grupo, id_horario]);
 
