@@ -1,9 +1,19 @@
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, useWindowDimensions, Modal, TextInput, Button, Picker } from "react-native";
+import {
+    View,
+    Text,
+    FlatList,
+    StyleSheet,
+    TouchableOpacity,
+    ScrollView,
+    useWindowDimensions,
+    Modal,
+    TextInput,
+    Button,
+    Picker,
+} from "react-native";
 import config from "@/components/config";
 import { useState, useEffect } from "react";
-const isDesktop = typeof window !== 'undefined' && window.innerWidth > 800;
-
-
+const isDesktop = typeof window !== "undefined" && window.innerWidth > 800;
 
 export default function Horario() {
     const [horaInicio, setHoraInicio] = useState("");
@@ -35,12 +45,15 @@ export default function Horario() {
 
     const pullHorarios = async () => {
         try {
-            const response = await fetch(`${config.serverUrl}/horario`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+            const response = await fetch(
+                `https://tursosv.onrender.com/horario`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
             const data = await response.json();
 
@@ -57,12 +70,15 @@ export default function Horario() {
 
     const fetchProfesores = async () => {
         try {
-            const response = await fetch(`${config.serverUrl}/usuarios`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+            const response = await fetch(
+                `https://tursosv.onrender.com/usuarios`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
             const data = await response.json();
 
@@ -78,12 +94,15 @@ export default function Horario() {
 
     const fetchGrupos = async () => {
         try {
-            const response = await fetch(`${config.serverUrl}/grupos`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+            const response = await fetch(
+                `https://tursosv.onrender.com/grupos`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
             const data = await response.json();
 
@@ -112,7 +131,8 @@ export default function Horario() {
     while (time + moduleDuration <= endTime) {
         const moduleEnd = time + moduleDuration;
         const isBreak = breakTimes.some(
-            (breakPeriod) => time < breakPeriod.end && moduleEnd > breakPeriod.start
+            (breakPeriod) =>
+                time < breakPeriod.end && moduleEnd > breakPeriod.start
         );
 
         if (isBreak) {
@@ -130,14 +150,19 @@ export default function Horario() {
     }
 
     const fullSchedule = schedule.map((mod) => ({
-        start: `${Math.floor(mod.start / 60)}:${(mod.start % 60).toString().padStart(2, "0")}`,
-        end: `${Math.floor(mod.end / 60)}:${(mod.end % 60).toString().padStart(2, "0")}`,
+        start: `${Math.floor(mod.start / 60)}:${(mod.start % 60)
+            .toString()
+            .padStart(2, "0")}`,
+        end: `${Math.floor(mod.end / 60)}:${(mod.end % 60)
+            .toString()
+            .padStart(2, "0")}`,
         isBreak: mod.isBreak,
         days: daysOfWeek.map((day) => {
-            const horario = horarios.find(h =>
-                h.dia === day &&
-                convertToMinutes(h.hora_inicio) === mod.start &&
-                convertToMinutes(h.hora_fin) === mod.end
+            const horario = horarios.find(
+                (h) =>
+                    h.dia === day &&
+                    convertToMinutes(h.hora_inicio) === mod.start &&
+                    convertToMinutes(h.hora_fin) === mod.end
             );
             return {
                 id: horario ? horario.id_horario : null,
@@ -151,7 +176,6 @@ export default function Horario() {
         }),
     }));
 
-
     const handleCellPress = (item, index) => {
         setSelectedCell({ item, index });
         setSelectedProfesor(item.days[index].profesorId);
@@ -164,9 +188,12 @@ export default function Horario() {
         setShowModal(true);
     };
 
-
     const handleDelete = async () => {
-        if (!selectedCell || !selectedCell.item || selectedCell.index === undefined) {
+        if (
+            !selectedCell ||
+            !selectedCell.item ||
+            selectedCell.index === undefined
+        ) {
             alert("Seleccione una celda válida.");
             return;
         }
@@ -178,26 +205,25 @@ export default function Horario() {
         }
 
         try {
-            const response = await fetch(`${config.serverUrl}/delete-horario`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ id_horario: horarioId })
-            });
-
-
+            const response = await fetch(
+                `https://tursosv.onrender.com/delete-horario`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ id_horario: horarioId }),
+                }
+            );
 
             const data = await response.json();
-            console.log(data);  // Verifica lo que está devolviendo el servidor
+            console.log(data); // Verifica lo que está devolviendo el servidor
             if (response.ok) {
                 alert("Horario eliminado correctamente.");
                 window.location.reload(); // Recarga la página completa
-
             } else {
                 alert(data.message);
             }
-
         } catch (error) {
             alert("No se pudo eliminar el horario.");
         }
@@ -214,28 +240,36 @@ export default function Horario() {
 
         console.log("item.start:", item.start, "item.end:", item.end); // Verifica estos valores
 
-
         //const hora_inicio = `${String(Math.floor(item.start / 60)).padStart(2, "0")}:${String(item.start % 60).padStart(2, "0")}:00`;
         //const hora_fin = `${String(Math.floor(item.end / 60)).padStart(2, "0")}:${String(item.end % 60).padStart(2, "0")}:00`;
         const hora_inicio = item.start;
         const hora_fin = item.end;
 
-        console.log("Datos a enviar:", { hora_inicio, hora_fin, dia: day, id_usuario: selectedProfesor, id_grupo: selectedGrupo });
+        console.log("Datos a enviar:", {
+            hora_inicio,
+            hora_fin,
+            dia: day,
+            id_usuario: selectedProfesor,
+            id_grupo: selectedGrupo,
+        });
 
         try {
-            const response = await fetch(`${config.serverUrl}/up-horario`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    hora_inicio,
-                    hora_fin,
-                    dia: day,
-                    id_usuario: selectedProfesor,
-                    id_grupo: selectedGrupo,
-                }),
-            });
+            const response = await fetch(
+                `https://tursosv.onrender.com/up-horario`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        hora_inicio,
+                        hora_fin,
+                        dia: day,
+                        id_usuario: selectedProfesor,
+                        id_grupo: selectedGrupo,
+                    }),
+                }
+            );
 
             const result = await response.json();
 
@@ -252,16 +286,21 @@ export default function Horario() {
         }
     };
 
-
-
     return (
         <View style={styles.container}>
             <ScrollView horizontal={!isDesktop} style={styles.scrollView}>
-                <View style={[styles.table, { width: isDesktop ? "100%" : width }]}>
+                <View
+                    style={[
+                        styles.table,
+                        { width: isDesktop ? "100%" : width },
+                    ]}
+                >
                     <View style={styles.headerRow}>
                         <Text style={styles.headerCell}>Hora</Text>
                         {daysOfWeek.map((day, index) => (
-                            <Text key={index} style={styles.headerCell}>{day}</Text>
+                            <Text key={index} style={styles.headerCell}>
+                                {day}
+                            </Text>
                         ))}
                     </View>
 
@@ -270,17 +309,34 @@ export default function Horario() {
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item }) => (
                             <View style={styles.row}>
-                                <Text style={styles.timeCell}>{item.start} - {item.end}</Text>
+                                <Text style={styles.timeCell}>
+                                    {item.start} - {item.end}
+                                </Text>
                                 {item.days.map((day, index) => (
                                     <TouchableOpacity
                                         key={index}
-                                        onPress={() => handleCellPress(item, index)}
-                                        style={[styles.cell, day.isBreak && styles.breakCell]}
+                                        onPress={() =>
+                                            handleCellPress(item, index)
+                                        }
+                                        style={[
+                                            styles.cell,
+                                            day.isBreak && styles.breakCell,
+                                        ]}
                                         disabled={day.isBreak}
                                     >
-                                        <Text style={styles.professorText}>{day.isBreak ? "Descanso" : `Prof: ${day.profesorId}`}</Text>
-                                        <Text style={styles.groupText}>{day.isBreak ? "" : `Grupo: ${day.grupoId}`}</Text>
-                                        <Text style={styles.groupText}>Carrera: {day.carrera}</Text>
+                                        <Text style={styles.professorText}>
+                                            {day.isBreak
+                                                ? "Descanso"
+                                                : `Prof: ${day.profesorId}`}
+                                        </Text>
+                                        <Text style={styles.groupText}>
+                                            {day.isBreak
+                                                ? ""
+                                                : `Grupo: ${day.grupoId}`}
+                                        </Text>
+                                        <Text style={styles.groupText}>
+                                            Carrera: {day.carrera}
+                                        </Text>
                                     </TouchableOpacity>
                                 ))}
                             </View>
@@ -296,18 +352,29 @@ export default function Horario() {
                 transparent={true}
                 style={styles.modal}
             >
-                <View style={[styles.modalContent, isDesktop && styles.modalDesktop]}>
+                <View
+                    style={[
+                        styles.modalContent,
+                        isDesktop && styles.modalDesktop,
+                    ]}
+                >
                     <Text style={styles.modalTitle}>Editar Horario</Text>
 
                     <Text>Profesor Nuevo:</Text>
                     <Picker
                         selectedValue={selectedProfesor}
                         style={styles.input}
-                        onValueChange={(itemValue) => setSelectedProfesor(itemValue)}
+                        onValueChange={(itemValue) =>
+                            setSelectedProfesor(itemValue)
+                        }
                     >
                         <Picker.Item label="Seleccionar Profesor" value="" />
-                        {profesores.map(profesor => (
-                            <Picker.Item key={profesor.id_usuario} label={profesor.nombre_usuario} value={profesor.id_usuario} />
+                        {profesores.map((profesor) => (
+                            <Picker.Item
+                                key={profesor.id_usuario}
+                                label={profesor.nombre_usuario}
+                                value={profesor.id_usuario}
+                            />
                         ))}
                     </Picker>
 
@@ -315,23 +382,31 @@ export default function Horario() {
                     <Picker
                         selectedValue={selectedGrupo}
                         style={styles.input}
-                        onValueChange={(itemValue) => setSelectedGrupo(itemValue)}
+                        onValueChange={(itemValue) =>
+                            setSelectedGrupo(itemValue)
+                        }
                     >
                         <Picker.Item label="Seleccionar Grupo" value="" />
-                        {grupos.map(grupo => (
-                            <Picker.Item key={grupo.id_grupo} label={`${grupo.nombre_grupo} - ${grupo.carrera}`} value={grupo.id_grupo} />
+                        {grupos.map((grupo) => (
+                            <Picker.Item
+                                key={grupo.id_grupo}
+                                label={`${grupo.nombre_grupo} - ${grupo.carrera}`}
+                                value={grupo.id_grupo}
+                            />
                         ))}
                     </Picker>
                     <Text>Hora Inicio: {horaInicio}</Text>
                     <Text>Hora Fin: {horaFin}</Text>
-
 
                     <View style={styles.buttons}>
                         <Button title="Eliminar" onPress={handleDelete} />
                         <Button title="Guardar" onPress={handleSave} />
                     </View>
 
-                    <Button title="Cerrar" onPress={() => setShowModal(false)} />
+                    <Button
+                        title="Cerrar"
+                        onPress={() => setShowModal(false)}
+                    />
                 </View>
             </Modal>
         </View>
@@ -410,9 +485,9 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: "#fff",
         flex: 1,
-        justifyContent: "center",  // Centrar el contenido en el modal
-        maxHeight: "80%",  // Asegura que el contenido no sobresalga
-        overflow: "scroll",  // Permite desplazarse si el contenido es muy largo
+        justifyContent: "center", // Centrar el contenido en el modal
+        maxHeight: "80%", // Asegura que el contenido no sobresalga
+        overflow: "scroll", // Permite desplazarse si el contenido es muy largo
     },
     modalDesktop: {
         width: 500,

@@ -79,7 +79,7 @@ export default function Groups() {
                     body: JSON.stringify(selectedGroup),
                 }
             );
-            fetchGroups();
+            tursoFetchGroups();
             setModalVisible(false);
         } catch (error) {
             console.error("Error updating group:", error);
@@ -115,7 +115,7 @@ export default function Groups() {
                     body: JSON.stringify(selectedGroup),
                 }
             );
-            fetchGroups();
+            tursoFetchGroups();
             setModalVisible(false);
         } catch (error) {
             console.error("Error deleting group:", error);
@@ -148,7 +148,7 @@ export default function Groups() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(selectedGroup),
             });
-            fetchGroups(); // Recargar la lista de grupos
+            tursoFetchGroups(); // Recargar la lista de grupos
             setModalVisible(false);
         } catch (error) {
             console.error("Error adding group:", error);
