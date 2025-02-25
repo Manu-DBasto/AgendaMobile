@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
         const checkSession = async () => {
             const userSession = await AsyncStorage.getItem("userSession");
             if (userSession) {
+                console.log(userSession);
                 const parsedSession = JSON.parse(userSession);
                 setIsAuthenticated(true);
                 setUserRole(parsedSession.rol);

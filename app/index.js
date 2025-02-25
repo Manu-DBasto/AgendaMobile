@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { Link, useRouter } from "expo-router";
 import config from "@/components/config";
+import tursoConfig from "@/components/tursoConfig";
 import { AuthContext } from "@/context/authContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { colors } from "@/assets/utilities/colors";
@@ -68,6 +69,38 @@ export default function Login() {
         }
     };
 
+    const tursoHandleLogin = async () => {
+        if (!email || !password) {
+            alert("LLene los campos antes de enviar el formulario.");
+            return;
+        }
+
+        if (!validateEmail(email)) {
+            alert("Introduzca un correo electronico valido.");
+            return;
+        }
+        try {
+            const response = await fetch(`${tursoConfig.serverUrl}/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                login(data.user);
+                router.push("home/home");
+            } else {
+                alert(data.message);
+            }
+        } catch (error) {
+            alert("No se pudo conectar al servidor.");
+        }
+    };
+
     return (
         <View style={styles.body}>
             <View style={styles.wrapper}>
@@ -99,7 +132,7 @@ export default function Login() {
                     <View>
                         <TouchableOpacity
                             style={styles.button}
-                            onPress={handleLogin}
+                            onPress={tursoHandleLogin}
                         >
                             <Text style={styles.textButton}>
                                 Iniciar sesión
