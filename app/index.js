@@ -93,7 +93,7 @@ export default function Login() {
 
             if (response.ok) {
                 login(data.user);
-                router.push("home/home");
+                router.push("home/uhorario");
             } else {
                 alert(data.message);
             }

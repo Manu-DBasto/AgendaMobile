@@ -69,6 +69,9 @@ export default function Perfil() {
     return (
         <View style={styles.container}>
             <Text style={styles.headerTitle}>Información Personal</Text>
+            <Text style={styles.instruction}>
+                Haga click sobre su informacion para poder editarla.
+            </Text>
             <View style={styles.card}>
                 <TouchableOpacity onPress={() => setModalVisible(true)}>
                     <DataTable style={styles.table}>
@@ -184,6 +187,13 @@ export default function Perfil() {
 }
 
 const styles = StyleSheet.create({
+    instruction: {
+        fontSize: 16,
+        fontWeight: 500,
+        marginBottom: 15,
+        textAlign: "center",
+        color: colors.secondary,
+    },
     container: { flex: 1, padding: 20, backgroundColor: colors.background },
     headerTitle: {
         fontSize: 34,

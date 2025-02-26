@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import config from "@/components/config";
 import { useState, useEffect } from "react";
+import { colors } from "@/assets/utilities/colors";
 const isDesktop = typeof window !== "undefined" && window.innerWidth > 800;
 
 export default function Horario() {
@@ -293,6 +294,9 @@ export default function Horario() {
 
     return (
         <View style={styles.container}>
+            <Text style={styles.instruction}>
+                Seleccione algun horario para poder hacer las modificaciones.
+            </Text>
             <ScrollView horizontal={!isDesktop} style={styles.scrollView}>
                 <View
                     style={[
@@ -419,6 +423,13 @@ export default function Horario() {
 }
 
 const styles = StyleSheet.create({
+    instruction: {
+        fontSize: 16,
+        fontWeight: 500,
+        marginBottom: 15,
+        textAlign: "center",
+        color: colors.secondary,
+    },
     container: {
         flex: 1,
         backgroundColor: "#f4f4f4",
@@ -500,6 +511,7 @@ const styles = StyleSheet.create({
         marginLeft: "auto",
         marginRight: "auto",
         borderRadius: 8,
+        backgroundColor: "#000",
     },
     modalTitle: {
         fontSize: 20,

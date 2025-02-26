@@ -43,12 +43,8 @@ export default function Layout() {
                     />
 
                     <Drawer.Screen
-                        name="home/home"
-                        options={{ title: "Inicio" }}
-                    />
-                    <Drawer.Screen
                         name="home/horario"
-                        options={{ title: "Horarios" }}
+                        options={{ title: "Administrar horario" }}
                     />
 
                     <Drawer.Screen
@@ -63,11 +59,16 @@ export default function Layout() {
 
                     <Drawer.Screen
                         name="home/uhorario"
-                        options={{ title: "Horario Oficial" }}
+                        options={{ title: "Inicio" }}
                     />
                     <Drawer.Screen
                         name="home/solicitudes"
                         options={{ title: "Solicitudes" }}
+                    />
+
+                    <Drawer.Screen
+                        name="home/perfil"
+                        options={{ title: "Perfil" }}
                     />
                 </Drawer>
             </GestureHandlerRootView>
@@ -82,25 +83,20 @@ function CustomDrawerContent(props) {
     return (
         <View style={style.drawer}>
             <TouchableOpacity
-                onPress={() => navigation.navigate("home/home")}
+                onPress={() => navigation.navigate("home/uhorario")}
                 style={style.options}
             >
                 <Text style={style.textOptions}>Inicio</Text>
             </TouchableOpacity>
+
             {userRole === "admin" && (
                 <TouchableOpacity
                     onPress={() => navigation.navigate("home/horario")}
                     style={style.options}
                 >
-                    <Text style={style.textOptions}>Horarios</Text>
+                    <Text style={style.textOptions}>Administrar horario</Text>
                 </TouchableOpacity>
             )}
-            <TouchableOpacity
-                onPress={() => navigation.navigate("home/uhorario")}
-                style={style.options}
-            >
-                <Text style={style.textOptions}>Horario Oficial</Text>
-            </TouchableOpacity>
 
             {userRole === "admin" && (
                 <TouchableOpacity
