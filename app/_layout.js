@@ -124,6 +124,13 @@ function CustomDrawerContent(props) {
                 <Text style={style.textOptions}>Solicitudes</Text>
             </TouchableOpacity>
 
+            <TouchableOpacity
+                onPress={() => navigation.navigate("home/perfil")}
+                style={style.options}
+            >
+                <Text style={style.textOptions}>Perfil</Text>
+            </TouchableOpacity>
+
             {isAuthenticated && (
                 <TouchableOpacity onPress={logout} style={style.logoutOption}>
                     <Text style={style.logout}>Cerrar sesión</Text>
