@@ -16,11 +16,12 @@ export default function Perfil() {
     const { isAuthenticated, user, setUser } = useContext(AuthContext);
     const [isModalVisible, setModalVisible] = useState(false);
     const [editedUser, setEditedUser] = useState(null);
+    console.log(user);
 
     const fetchUserData = async () => {
         try {
             const response = await fetch(
-                `${config.serverUrl}/users/${user.id_usuario}`
+                `https://tursosv.onrender.com/users/${user.id_usuario}`
             );
             const data = await response.json();
             setUser(data);
@@ -42,7 +43,7 @@ export default function Perfil() {
         if (!editedUser) return;
         try {
             const response = await fetch(
-                `${config.serverUrl}/users/${user.id_usuario}`,
+                `https://tursosv.onrender.com/users/${user.id_usuario}`,
                 {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },

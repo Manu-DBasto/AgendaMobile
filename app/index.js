@@ -30,6 +30,7 @@ export default function Login() {
     useEffect(() => {
         const checkSession = async () => {
             const userSession = await AsyncStorage.getItem("userSession");
+            console.log(userSession);
             if (userSession) {
                 router.replace("/home/home");
             }
