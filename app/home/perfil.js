@@ -4,60 +4,46 @@ import { DataTable } from "react-native-paper";
 import Modal from "react-native-modal";
 import { AuthContext } from "../../context/authContext";
 import config from "@/components/config";
-import { colors } from "@/assets/utilities/colors"; // Asegurar que está definido
+import { colors } from "@/assets/utilities/colors";
 
 export default function Perfil() {
     const { isAuthenticated, user, setUser } = useContext(AuthContext);
     const [isModalVisible, setModalVisible] = useState(false);
     const [editedUser, setEditedUser] = useState(null);
 
-    // Función para obtener los datos del usuario desde la API
     const fetchUserData = async () => {
         try {
             const response = await fetch(`${config.serverUrl}/users/${user.id_usuario}`);
             const data = await response.json();
-            setUser(data); // Actualiza el estado global del usuario
-            setEditedUser(data); // También actualiza los datos en el modal
+            setUser(data);
+            setEditedUser(data);
         } catch (error) {
             console.error("Error al obtener usuario:", error);
         }
     };
 
-    // Cargar datos al abrir la pantalla
     useEffect(() => {
-        if (user) {
-            fetchUserData(); // Obtiene los datos actualizados desde la BD
-        }
+        if (user) fetchUserData();
     }, []);
 
-    // Actualizar `editedUser` cada vez que cambie `user`
     useEffect(() => {
-        if (user) {
-            setEditedUser({ ...user });
-        }
+        if (user) setEditedUser({ ...user });
     }, [user]);
 
-    // Función para actualizar usuario en la base de datos
     const handleEdit = async () => {
         if (!editedUser) return;
-
-        console.log("Datos enviados a la API:", editedUser);
-
         try {
             const response = await fetch(`${config.serverUrl}/users/${user.id_usuario}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(editedUser),
             });
-
             const result = await response.json();
-            console.log("Respuesta de la API:", result);
-
             if (result.message === "Usuario actualizado correctamente") {
-                fetchUserData(); // Recargar los datos desde la API
-                setModalVisible(false); // Cerrar el modal
-            } else {
-                console.error("Error al actualizar:", result.error);
+                fetchUserData();
+                setModalVisible(false);
+
+                alert("Perfil actualizado. Para ver los cambios reflejados, es necesario iniciar sesion nuevamente", );
             }
         } catch (error) {
             console.error("Error actualizando usuario:", error);
@@ -68,52 +54,45 @@ export default function Perfil() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Perfil de Usuario</Text>
-            <DataTable style={styles.tableContainer}>
-                <DataTable.Header>
-                    <DataTable.Title>Nombre</DataTable.Title>
-                    <DataTable.Title>Email</DataTable.Title>
-                    <DataTable.Title>Teléfono</DataTable.Title>
-                </DataTable.Header>
+            <Text style={styles.headerTitle}>Información Personal</Text>
+            <View style={styles.card}>
                 <TouchableOpacity onPress={() => setModalVisible(true)}>
-                    <DataTable.Row style={styles.tableRowfirst}>
-                        <DataTable.Cell style={styles.dataText}>{user?.nombre_usuario || "N/A"}</DataTable.Cell>
-                        <DataTable.Cell style={styles.dataText}>{user?.email || "N/A"}</DataTable.Cell>
-                        <DataTable.Cell style={styles.dataText}>{user?.telefono || "N/A"}</DataTable.Cell>
-                    </DataTable.Row>
+                    <DataTable style={styles.table}>
+                        <DataTable.Row>
+                            <DataTable.Cell><Text style={styles.label}>Nombre:</Text></DataTable.Cell>
+                            <DataTable.Cell><Text style={styles.dataText}>{user?.nombre_usuario || "N/A"}</Text></DataTable.Cell>
+                            </DataTable.Row>
+                        <DataTable.Row>
+                            <DataTable.Cell><Text style={styles.label}>Correo:</Text></DataTable.Cell>
+                            <DataTable.Cell><Text style={styles.dataText}>{user?.email || "N/A"}</Text></DataTable.Cell>
+                            </DataTable.Row>
+                        <DataTable.Row>
+                            <DataTable.Cell><Text style={styles.label}>Teléfono:</Text></DataTable.Cell>
+                            <DataTable.Cell><Text style={styles.dataText}>{user?.telefono || "N/A"}</Text></DataTable.Cell>
+                            </DataTable.Row>
+                        <DataTable.Row>
+                            <DataTable.Cell><Text style={styles.label}>Materia:</Text></DataTable.Cell>
+                            <DataTable.Cell><Text style={styles.dataText}>{user?.materia_grupo || "N/A"}</Text></DataTable.Cell>
+                            </DataTable.Row>
+                    </DataTable>
                 </TouchableOpacity>
-            </DataTable>
-
-            {/* Modal para edición */}
-            <Modal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)} style={styles.modalContainer}>
+            </View>
+            <Modal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)}>
                 <View style={styles.modal}>
-                    <Text style={styles.title}>Editar Perfil</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={editedUser?.nombre_usuario || ""}
-                        onChangeText={(text) => setEditedUser({ ...editedUser, nombre_usuario: text })}
-                        placeholder="Nombre"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        value={editedUser?.email || ""}
-                        onChangeText={(text) => setEditedUser({ ...editedUser, email: text })}
-                        placeholder="Correo"
-                        keyboardType="email-address"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        value={editedUser?.telefono || ""}
-                        onChangeText={(text) => setEditedUser({ ...editedUser, telefono: text })}
-                        placeholder="Teléfono"
-                        keyboardType="phone-pad"
-                    />
-                    <TouchableOpacity style={[styles.button, styles.save]} onPress={handleEdit}>
-                        <Text style={styles.buttonText}>Guardar</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.button, styles.cancel]} onPress={() => setModalVisible(false)}>
-                        <Text style={styles.buttonText}>Cancelar</Text>
-                    </TouchableOpacity>
+                    <Text style={styles.modalTitle}>Editar Perfil</Text>
+                    <TextInput style={styles.input} value={editedUser?.nombre_usuario} onChangeText={(text) => setEditedUser({ ...editedUser, nombre_usuario: text })} placeholder="Nombre" />
+                    <TextInput style={styles.input} value={editedUser?.email} onChangeText={(text) => setEditedUser({ ...editedUser, email: text })} placeholder="Correo" keyboardType="email-address" />
+                    <TextInput style={styles.input} value={editedUser?.telefono} onChangeText={(text) => setEditedUser({ ...editedUser, telefono: text })} placeholder="Teléfono" keyboardType="phone-pad" />
+                    <TextInput style={styles.input} value={editedUser?.materia_grupo} onChangeText={(text) => setEditedUser({ ...editedUser, materia_grupo: text })} placeholder="Materia" keyboardType="phone-pad" />
+
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={[styles.button, styles.saveButton]} onPress={handleEdit}>
+                            <Text style={styles.buttonText}>Guardar</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={() => setModalVisible(false)}>
+                            <Text style={styles.buttonText}>Cancelar</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </Modal>
         </View>
@@ -121,110 +100,19 @@ export default function Perfil() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        backgroundColor: colors.background,
-        alignItems: "center",
-    },
+    container: { flex: 1, padding: 20, backgroundColor: colors.background },
+    headerTitle: { fontSize: 34, fontWeight: "bold", color: colors.primary, textAlign: "center", marginBottom: 20 },
+    card: { backgroundColor: colors.light, padding: 20, borderRadius: 12, shadowColor: "#000", shadowOpacity: 0.1, elevation: 3 },
+    label: { fontWeight: "bold", color: colors.dark, fontSize: 15 },
+    table: { backgroundColor: "white", borderRadius: 10, fontSize: 28 },
+    modal: { backgroundColor: "white", padding: 20, borderRadius: 10, alignItems: "center" },
+    modalTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 15, color: colors.primary },
+    input: { width: "100%", borderWidth: 1, borderRadius: 8, padding: 10, marginBottom: 10, borderColor: colors.secondary, backgroundColor: "#f9f9f9" },
+    buttonContainer: { flexDirection: "row", justifyContent: "space-between", width: "100%", marginTop: 10 },
+    button: { flex: 1, padding: 12, borderRadius: 8, alignItems: "center", marginHorizontal: 5 },
+    saveButton: { backgroundColor: colors.success },
+    cancelButton: { backgroundColor: colors.error },
+    buttonText: { color: "white", fontWeight: "bold" },
+    dataText: { fontSize: 20, color: colors.dark },
 
-    title: {
-        fontSize: 20,
-        fontWeight: "bold",
-        marginBottom: 5,
-        textAlign: "center",
-        color: colors.primary,
-    },
-
-    instruction: {
-        fontSize: 16,
-        fontWeight: 500,
-        marginBottom: 15,
-        textAlign: "center",
-        color: colors.secondary,
-    },
-
-    tableContainer: {
-        backgroundColor: colors.light,
-        padding: 20,
-        borderRadius: 20,
-        maxWidth: 700,
-    },
-
-    tableRowfirst: {
-        borderColor: colors.accent,
-        backgroundColor: colors.light,
-    },
-    tableRowsecond: {
-        borderColor: colors.accent,
-        backgroundColor: colors.background,
-    },
-
-    dataText: { color: colors.onAccent },
-
-    //Estilos del modal
-    modalContainer: {
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    modal: {
-        backgroundColor: colors.greenBackground,
-        padding: 20,
-        borderRadius: 10,
-        gap: 10,
-        maxWidth: 700,
-        width: "100%",
-    },
-
-    input: {
-        borderWidth: 1,
-        padding: 10,
-        borderRadius: 10,
-        borderColor: colors.secondary,
-        color: colors.onAccent,
-        backgroundColor: colors.light,
-    },
-
-    pickerContainer: {
-        borderWidth: 1,
-        borderColor: colors.secondary,
-        borderRadius: 10,
-        overflow: "hidden",
-    },
-
-    picker: {
-        width: "100%",
-        minHeight: 40,
-        backgroundColor: colors.light,
-    },
-
-    label: {
-        fontWeight: "600",
-        color: colors.secondary,
-    },
-
-    modalButtons: {
-        flexDirection: "row",
-        justifyContent: "space-around",
-        marginTop: 10,
-    },
-
-    button: { padding: 10, borderRadius: 5 },
-
-    save: {
-        backgroundColor: colors.success,
-    },
-
-    delete: {
-        backgroundColor: colors.error,
-    },
-
-    cancel: {
-        backgroundColor: colors.dark,
-    },
-
-    buttonText: {
-        color: colors.light,
-        fontWeight: "bold",
-    },
 });

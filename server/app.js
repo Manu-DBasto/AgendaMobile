@@ -3,6 +3,7 @@ import {
     login,
     registerUser,
     getUsers,
+    getUser,
     deleteUser,
     updateUser,
 } from "./database.js";
@@ -54,6 +55,17 @@ app.get("/users", async (req, res) => {
         const users = await getUsers();
 
         res.status(200).send(users);
+    } catch (error) {
+        res.status(500).json({ message: "Error obteniendo usuarios" });
+    }
+});
+
+app.get("/user/:id", async (req, res) => {
+    try {
+        const { id_usuario } = req.body;
+        const user = await getUser(id_usuario);
+
+        res.status(200).send(user);
     } catch (error) {
         res.status(500).json({ message: "Error obteniendo usuarios" });
     }
