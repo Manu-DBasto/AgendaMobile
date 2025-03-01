@@ -32,7 +32,7 @@ export default function Login() {
             const userSession = await AsyncStorage.getItem("userSession");
             console.log(userSession);
             if (userSession) {
-                router.replace("/home/home");
+                router.replace("/home/uhorario");
             }
         };
         checkSession();
