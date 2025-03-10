@@ -9,8 +9,8 @@ import {
     Modal,
     TextInput,
     Button,
-    Picker,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import config from "@/components/config";
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "@/context/authContext";
@@ -331,8 +331,8 @@ export default function Horario() {
                 visible={showModal}
                 animationType="slide"
                 onRequestClose={() => setShowModal(false)}
-                transparent={true}
                 style={styles.modal}
+                transparent={true}
             >
                 <View
                     style={[
@@ -466,6 +466,14 @@ const styles = StyleSheet.create({
         justifyContent: "center", // Centrar el contenido en el modal
         maxHeight: "80%", // Asegura que el contenido no sobresalga
         overflow: "scroll", // Permite desplazarse si el contenido es muy largo
+        shadowColor: "#000000",
+        shadowOffset: {
+            width: 0,
+            height: 10,
+        },
+        shadowOpacity: 100,
+        shadowRadius: 100,
+        elevation: 7,
     },
     modalDesktop: {
         width: 500,
@@ -473,6 +481,14 @@ const styles = StyleSheet.create({
         marginLeft: "auto",
         marginRight: "auto",
         borderRadius: 8,
+        shadowColor: "#000000",
+        shadowOffset: {
+            width: 0,
+            height: 10,
+        },
+        shadowOpacity: 100,
+        shadowRadius: 100,
+        elevation: 7,
     },
     modalTitle: {
         fontSize: 20,

@@ -9,9 +9,9 @@ import {
     Modal,
     TextInput,
     Button,
-    Picker,
 } from "react-native";
 import config from "@/components/config";
+import { Picker } from "@react-native-picker/picker";
 import { useState, useEffect } from "react";
 import { colors } from "@/assets/utilities/colors";
 const isDesktop = typeof window !== "undefined" && window.innerWidth > 800;
@@ -295,7 +295,8 @@ export default function Horario() {
     return (
         <View style={styles.container}>
             <Text style={styles.instruction}>
-                Seleccione algun horario para poder hacer las modificaciones.
+                Seleccione algun horario para poder verlo o hacer
+                modificaciones.
             </Text>
             <ScrollView horizontal={!isDesktop} style={styles.scrollView}>
                 <View
@@ -499,11 +500,19 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         padding: 20,
-        backgroundColor: "#fff",
+        backgroundColor: "#f3f3f3",
         flex: 1,
         justifyContent: "center", // Centrar el contenido en el modal
         maxHeight: "80%", // Asegura que el contenido no sobresalga
         overflow: "scroll", // Permite desplazarse si el contenido es muy largo
+        shadowColor: "#000000",
+        shadowOffset: {
+            width: 0,
+            height: 10,
+        },
+        shadowOpacity: 100,
+        shadowRadius: 100,
+        elevation: 7,
     },
     modalDesktop: {
         width: 500,
@@ -511,7 +520,15 @@ const styles = StyleSheet.create({
         marginLeft: "auto",
         marginRight: "auto",
         borderRadius: 8,
-        backgroundColor: "#000",
+        backgroundColor: "#f3f3f3",
+        shadowColor: "#000000",
+        shadowOffset: {
+            width: 0,
+            height: 10,
+        },
+        shadowOpacity: 100,
+        shadowRadius: 100,
+        elevation: 7,
     },
     modalTitle: {
         fontSize: 20,
@@ -537,8 +554,5 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "rgba(0, 0, 0, 0.5)", // Fondo semi-transparente
-        width: "100%", // Para que ocupe el 100% de la pantalla
-        height: "100%", // Para asegurarnos de que ocupe toda la altura
     },
 });
