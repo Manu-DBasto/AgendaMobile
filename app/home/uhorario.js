@@ -16,6 +16,7 @@ import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "@/context/authContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { colors } from "@/assets/utilities/colors";
+import { Link } from "expo-router";
 const isDesktop = typeof window !== "undefined" && window.innerWidth > 800;
 
 export default function Horario() {
@@ -270,6 +271,7 @@ export default function Horario() {
             <Text style={styles.instruction}>
                 Seleccione algun horario para poder solicitarlo.
             </Text>
+
             <ScrollView horizontal={!isDesktop} style={styles.scrollView}>
                 <View
                     style={[
@@ -326,7 +328,6 @@ export default function Horario() {
                     />
                 </View>
             </ScrollView>
-
             <Modal
                 visible={showModal}
                 animationType="slide"

@@ -183,19 +183,6 @@ export default function simpleHorario() {
         }),
     }));
 
-    // const professorColors = {
-    //     1: "#FFDDC1", // Color para el profesor 1
-    //     2: "#CFE2F3", // Color para el profesor 2
-    //     3: "#D9EAD3", // Color para el profesor 3
-    //     4: "#FFE4E1", // Color para el profesor 4
-    //     5: "#E6E6FA", // Color para el profesor 5
-    //     6: "#F0FFF0", // Color para el profesor 6
-    //     7: "#F5F5DC", // Color para el profesor 7
-    //     8: "#FFFACD", // Color para el profesor 8
-    //     9: "#E0FFFF", // Color para el profesor 9
-    //     10: "#FFF5EE", // Color para el profesor 10
-    // };
-
     const getProfessorColor = (profesorId) => {
         // Lista de colores predefinidos
         const colors = [
@@ -238,11 +225,13 @@ export default function simpleHorario() {
         <View style={styles.container}>
             <View>
                 <Text style={styles.instruction}>
-                    <Link href={{ pathname: "/" }} style={styles.link}>
-                        Inicie sesión
-                    </Link>{" "}
-                    para poder hacer cambios en el horario.
+                    Inicie sesión para poder hacer cambios en el horario.
                 </Text>
+                <View style={styles.headerButtons}>
+                    <Link href={{ pathname: "/" }} style={styles.link}>
+                        {"<"} Volver
+                    </Link>
+                </View>
             </View>
 
             {isMobile && (
@@ -336,9 +325,20 @@ export default function simpleHorario() {
 }
 
 const styles = StyleSheet.create({
+    headerButtons: {
+        flexDirection: "row",
+    },
+    notiButton: {
+        marginLeft: "auto",
+        backgroundColor: colors.greenBackground,
+        borderWidth: 1,
+        borderColor: "gray",
+        borderRadius: 10,
+        paddingHorizontal: 4,
+    },
     instruction: {
-        fontSize: 20,
-        fontWeight: 500,
+        fontSize: 16,
+        fontWeight: 700,
         textAlign: "center",
         color: colors.secondary,
     },
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#f4f4f4",
         paddingHorizontal: 50,
         paddingVertical: 10,
-        gap: 20,
+        gap: 10,
     },
     scrollView: {
         flex: 1,
@@ -369,13 +369,13 @@ const styles = StyleSheet.create({
     },
     headerCell: {
         flex: 1,
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: "bold",
         textAlign: "center",
     },
     headerHora: {
         flex: 1,
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: "bold",
         textAlign: "center",
         maxWidth: 150,
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
     timeCell: {
         backgroundColor: "#ededed",
         flex: 1,
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: "bold",
         textAlign: "center",
         paddingVertical: 20,
@@ -426,16 +426,16 @@ const styles = StyleSheet.create({
         height: 30,
     },
     professorText: {
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: "bold",
         color: "gray",
     },
     groupText: {
-        fontSize: 12,
+        fontSize: 10,
         color: "gray",
     },
     careerText: {
-        fontSize: 12,
+        fontSize: 10,
         color: "#888",
         fontStyle: "italic",
     },
