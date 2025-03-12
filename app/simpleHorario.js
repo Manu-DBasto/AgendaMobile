@@ -66,7 +66,7 @@ export default function simpleHorario() {
 
             if (response.ok) {
                 setHorarios(data.horario);
-                console.log("Horarios obtenidos correctamente", data.horario);
+                console.log("Horarios obtenidos correctamente");
             } else {
                 alert(data.message);
             }
@@ -183,30 +183,68 @@ export default function simpleHorario() {
         }),
     }));
 
-    const professorColors = {
-        1: "#FFDDC1", // Color para el profesor 1
-        2: "#CFE2F3", // Color para el profesor 2
-        3: "#D9EAD3", // Color para el profesor 3
-        4: "#FFE4E1", // Color para el profesor 4
-        5: "#E6E6FA", // Color para el profesor 5
-        6: "#F0FFF0", // Color para el profesor 6
-        7: "#F5F5DC", // Color para el profesor 7
-        8: "#FFFACD", // Color para el profesor 8
-        9: "#E0FFFF", // Color para el profesor 9
-        10: "#FFF5EE", // Color para el profesor 10
+    // const professorColors = {
+    //     1: "#FFDDC1", // Color para el profesor 1
+    //     2: "#CFE2F3", // Color para el profesor 2
+    //     3: "#D9EAD3", // Color para el profesor 3
+    //     4: "#FFE4E1", // Color para el profesor 4
+    //     5: "#E6E6FA", // Color para el profesor 5
+    //     6: "#F0FFF0", // Color para el profesor 6
+    //     7: "#F5F5DC", // Color para el profesor 7
+    //     8: "#FFFACD", // Color para el profesor 8
+    //     9: "#E0FFFF", // Color para el profesor 9
+    //     10: "#FFF5EE", // Color para el profesor 10
+    // };
+
+    const getProfessorColor = (profesorId) => {
+        // Lista de colores predefinidos
+        const colors = [
+            "#FFDDC1",
+            "#CFE2F3",
+            "#D9EAD3",
+            "#FFE4E1",
+            "#E6E6FA",
+            "#F0FFF0",
+            "#F5F5DC",
+            "#FFFACD",
+            "#E0FFFF",
+            "#FFF5EE",
+            "#FFCCCC",
+            "#CCE2FF",
+            "#CCFFCC",
+            "#FFCCFF",
+            "#FFFFCC",
+            "#CCFFFF",
+            "#FFE5CC",
+            "#E5CCFF",
+            "#CCFFE5",
+            "#FFCCE5",
+        ];
+
+        // Si el profesorId es válido, selecciona un color de la lista
+        if (profesorId) {
+            // Usamos el código hash del profesorId para seleccionar un color
+            const hash = profesorId
+                .split("")
+                .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            return colors[hash % colors.length];
+        }
+
+        // Color por defecto si no hay profesorId
+        return "#FFFFFF"; // Blanco
     };
 
     return (
         <View style={styles.container}>
             <View>
-               <Text style={styles.instruction}>
-                <Link href={{ pathname: "/" }} style={styles.link}>
-                    Inicie sesión
-                </Link>{" "}
-                para poder hacer cambios en el horario.
-            </Text> 
+                <Text style={styles.instruction}>
+                    <Link href={{ pathname: "/" }} style={styles.link}>
+                        Inicie sesión
+                    </Link>{" "}
+                    para poder hacer cambios en el horario.
+                </Text>
             </View>
-            
+
             {isMobile && (
                 <Picker
                     selectedValue={selectedDay}
@@ -261,7 +299,9 @@ export default function simpleHorario() {
                                                 day.isBreak && styles.breakCell,
                                                 !day.isBreak && {
                                                     backgroundColor:
-                                                        professorColors[day.id],
+                                                        getProfessorColor(
+                                                            day.profesorId
+                                                        ),
                                                 },
                                             ]}
                                             disabled={day.isBreak}
