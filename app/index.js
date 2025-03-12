@@ -130,7 +130,7 @@ export default function Login() {
                         />
                     </View>
 
-                    <View>
+                    <View style={styles.buttonContainer}>
                         <TouchableOpacity
                             style={styles.button}
                             onPress={tursoHandleLogin}
@@ -139,6 +139,12 @@ export default function Login() {
                                 Iniciar sesión
                             </Text>
                         </TouchableOpacity>
+                        <Link
+                            href={{ pathname: "/simpleHorario" }}
+                            style={styles.horarioButton}
+                        >
+                            Ver horario
+                        </Link>
                     </View>
                 </View>
 
@@ -203,6 +209,16 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
 
+    horarioButton: {
+        backgroundColor: colors.secondary,
+        borderRadius: 10,
+        height: 40,
+        padding: 10,
+        color: colors.light,
+        fontWeight: "600",
+        textAlign: "center",
+    },
+
     textButton: {
         color: colors.light,
         fontWeight: "600",
@@ -212,6 +228,10 @@ const styles = StyleSheet.create({
     link: {
         color: colors.accent,
         fontWeight: "500",
+    },
+
+    buttonContainer: {
+        gap: 10,
     },
 
     ...(Platform.OS === "web"
