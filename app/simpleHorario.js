@@ -198,12 +198,15 @@ export default function simpleHorario() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.instruction}>
+            <View>
+               <Text style={styles.instruction}>
                 <Link href={{ pathname: "/" }} style={styles.link}>
                     Inicie sesión
                 </Link>{" "}
                 para poder hacer cambios en el horario.
-            </Text>
+            </Text> 
+            </View>
+            
             {isMobile && (
                 <Picker
                     selectedValue={selectedDay}
@@ -236,12 +239,14 @@ export default function simpleHorario() {
                         style={styles.list}
                         data={fullSchedule}
                         keyExtractor={(item, index) => index.toString()}
-                        // ItemSeparatorComponent={() => (
-                        //     <View style={{ height: 8 }} />
-                        // )}
                         renderItem={({ item }) => (
                             <View style={styles.row}>
-                                <Text style={styles.timeCell}>
+                                <Text
+                                    style={[
+                                        styles.timeCell,
+                                        item.isBreak && styles.breakTimeCell,
+                                    ]}
+                                >
                                     {item.start} - {item.end}
                                 </Text>
                                 {item.days.map((day, index) => {
@@ -301,8 +306,8 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#f4f4f4",
         paddingHorizontal: 50,
-        padding: 5,
-        gap: 10,
+        paddingVertical: 10,
+        gap: 20,
     },
     scrollView: {
         flex: 1,
@@ -338,7 +343,7 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: "row",
         alignItems: "center",
-        minHeight: 65,
+        minHeight: 20,
     },
     timeCell: {
         backgroundColor: "#ededed",
@@ -352,9 +357,13 @@ const styles = StyleSheet.create({
         borderColor: "#d7d7d7",
         maxWidth: 150,
     },
+    breakTimeCell: {
+        minHeight: 20,
+        paddingVertical: 3,
+    },
     cell: {
         flex: 1,
-        paddingVertical: 5,
+        paddingVertical: 2,
         paddingHorizontal: 5,
         // backgroundColor: "#fff",
         // margin: 2,
@@ -374,14 +383,16 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "gray",
         borderColor: "#d7d7d7",
+        height: 30,
     },
     professorText: {
         fontSize: 14,
         fontWeight: "bold",
+        color: "gray",
     },
     groupText: {
         fontSize: 12,
-        color: "#555",
+        color: "gray",
     },
     careerText: {
         fontSize: 12,
