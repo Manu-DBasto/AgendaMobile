@@ -20,7 +20,7 @@ export default function Login() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const { login } = useContext(AuthContext);
+    const { login, user } = useContext(AuthContext);
 
     const validateEmail = (email) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

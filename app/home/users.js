@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
     View,
     Text,
@@ -13,6 +13,7 @@ import config from "@/components/config";
 import tursoConfig from "@/components/tursoConfig";
 import { Picker } from "@react-native-picker/picker";
 import { colors } from "@/assets/utilities/colors";
+import { AuthContext } from "@/context/authContext";
 
 export default function Users() {
     const [users, setUsers] = useState([]);
