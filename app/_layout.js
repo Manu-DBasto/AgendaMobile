@@ -7,6 +7,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
 import React, { useState, useEffect, useContext } from "react";
 import { colors } from "@/assets/utilities/colors";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Layout() {
     return (
@@ -48,10 +49,8 @@ export default function Layout() {
                             headerShown: false,
                             drawerItemStyle: {
                                 display: "none",
-                                headerRight: () => (
-                                    <NotificationButton
-                                        navigation={navigation}
-                                    />
+                                headerRight: (props) => (
+                                    <NotificationButton {...props} />
                                 ),
                             },
                         }}
@@ -61,8 +60,8 @@ export default function Layout() {
                         name="home/horario"
                         options={{
                             title: "Administrar horario",
-                            headerRight: () => (
-                                <NotificationButton navigation={navigation} />
+                            headerRight: (props) => (
+                                <NotificationButton {...props} />
                             ),
                         }}
                     />
@@ -71,8 +70,8 @@ export default function Layout() {
                         name="home/users"
                         options={{
                             title: "Usuarios",
-                            headerRight: () => (
-                                <NotificationButton navigation={navigation} />
+                            headerRight: (props) => (
+                                <NotificationButton {...props} />
                             ),
                         }}
                     />
@@ -81,8 +80,8 @@ export default function Layout() {
                         name="home/groups"
                         options={{
                             title: "Grupos",
-                            headerRight: () => (
-                                <NotificationButton navigation={navigation} />
+                            headerRight: (props) => (
+                                <NotificationButton {...props} />
                             ),
                         }}
                     />
@@ -91,8 +90,8 @@ export default function Layout() {
                         name="home/uhorario"
                         options={{
                             title: "Inicio",
-                            headerRight: () => (
-                                <NotificationButton navigation={navigation} />
+                            headerRight: (props) => (
+                                <NotificationButton {...props} />
                             ),
                         }}
                     />
@@ -100,8 +99,8 @@ export default function Layout() {
                         name="home/solicitudes"
                         options={{
                             title: "Solicitudes",
-                            headerRight: () => (
-                                <NotificationButton navigation={navigation} />
+                            headerRight: (props) => (
+                                <NotificationButton {...props} />
                             ),
                         }}
                     />
@@ -110,8 +109,8 @@ export default function Layout() {
                         name="home/perfil"
                         options={{
                             title: "Perfil",
-                            headerRight: () => (
-                                <NotificationButton navigation={navigation} />
+                            headerRight: (props) => (
+                                <NotificationButton {...props} />
                             ),
                         }}
                     />
@@ -181,9 +180,10 @@ function CustomDrawerContent(props) {
     );
 }
 
-function NotificationButton({ navigation }) {
+function NotificationButton() {
     const { user } = useContext(AuthContext);
     const [pendingCount, setPendingCount] = useState(0);
+    const navigation = useNavigation(); // Aquí obtienes la navegación
 
     useEffect(() => {
         if (!user) return;
@@ -211,7 +211,7 @@ function NotificationButton({ navigation }) {
 
     return (
         <TouchableOpacity
-            onPress={() => navigation.navigate("/home/solicitudes")}
+            onPress={() => navigation.navigate("home/solicitudes")} // Usa la navegación aquí
             style={style.notificationButton}
         >
             <Text style={style.notificationText}>
