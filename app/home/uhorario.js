@@ -365,7 +365,7 @@ export default function simpleHorario() {
                     <View style={styles.modalButtons}>
                         <TouchableOpacity
                             style={[styles.button, styles.cancel]}
-                            onPress={tursoCancelSoli}
+                            
                         >
                             <Text style={styles.buttonText}>
                                 Cancelar Solicitud
