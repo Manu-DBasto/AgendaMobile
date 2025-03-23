@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
     View,
     Text,
@@ -12,31 +12,66 @@ import { DataTable } from "react-native-paper";
 import config from "@/components/config";
 import { Picker } from "@react-native-picker/picker";
 import { colors } from "@/assets/utilities/colors";
+import { AuthContext } from "@/context/authContext";
 
 export default function Solicitudes() {
     const [solicitudes, setSolicitudes] = useState([]);
     const [selectedSolicitud, setSelectedSolicitud] = useState(null);
     const [isModalVisible, setModalVisible] = useState(false);
     const [search, setSearch] = useState("");
+    const { user } = useContext(AuthContext);
 
     useEffect(() => {
-        tursoFetchSolicitudes(search);
-    }, [search]);
+        if (user) {
+            tursoFetchSolicitudes(search, user.id_usuario);
+        } else {
+            console.log("User is not available yet");
+        }
+    }, [search, user]);
 
-    const tursoFetchSolicitudes = async (searchTerm) => {
+    const tursoFetchSolicitudes = async (search = "", userId) => {
         try {
             const response = await fetch(
-                `https://tursosv.onrender.com/solicitudes`,
+                `https://tursosv.onrender.com/solicitudes?search=${search}`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ search: searchTerm }),
+                    body: JSON.stringify({ userId: userId }),
                 }
             );
             const data = await response.json();
             setSolicitudes(data.solicitudes);
         } catch (error) {
             console.error("Error fetching solicitudes:", error);
+        }
+    };
+
+    const acceptSoli = async () => {
+        if (!selectedSolicitud) return;
+        try {
+            const response = await fetch(
+                `http://localhost:3000/solicitudes/aceptar`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id_solicitud: selectedSolicitud.id_solicitud,
+                    }),
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+                console.log(data.message);
+                tursoFetchSolicitudes(search, user.id_usuario); // Recargar la lista de solicitudes
+                setModalVisible(false);
+            } else {
+                alert(data.message);
+            }
+        } catch (error) {
+            console.error("Error al aceptar la solicitud:", error);
+            alert("Hubo un error al aceptar la solicitud.");
         }
     };
 
@@ -58,7 +93,7 @@ export default function Solicitudes() {
 
             if (data.success) {
                 console.log(data.message);
-                tursoFetchSolicitudes(); // Recargar la lista de solicitudes
+                tursoFetchSolicitudes(search, user.id_usuario); // Recargar la lista de solicitudes
                 setModalVisible(false);
             } else {
                 alert(data.message);
@@ -86,11 +121,9 @@ export default function Solicitudes() {
                 </View>
 
                 <DataTable.Header>
-                    <DataTable.Title>Hora Inicio</DataTable.Title>
-                    <DataTable.Title>Hora Fin</DataTable.Title>
+                    <DataTable.Title>Modulo</DataTable.Title>
                     <DataTable.Title>Día</DataTable.Title>
-                    <DataTable.Title>Solicitante</DataTable.Title>
-                    <DataTable.Title>Grupo Nuevo</DataTable.Title>
+                    <DataTable.Title>De</DataTable.Title>
                     <DataTable.Title>Estado</DataTable.Title>
                 </DataTable.Header>
                 <FlatList
@@ -114,19 +147,13 @@ export default function Solicitudes() {
                                 ]}
                             >
                                 <DataTable.Cell style={styles.dataText}>
-                                    {item.hora_inicio}
-                                </DataTable.Cell>
-                                <DataTable.Cell style={styles.dataText}>
-                                    {item.hora_fin}
+                                    {item.hora_inicio} - {item.hora_fin}
                                 </DataTable.Cell>
                                 <DataTable.Cell style={styles.dataText}>
                                     {item.dia}
                                 </DataTable.Cell>
                                 <DataTable.Cell style={styles.dataText}>
                                     {item.solicitante}
-                                </DataTable.Cell>
-                                <DataTable.Cell style={styles.dataText}>
-                                    {item.grupo_nuevo}
                                 </DataTable.Cell>
                                 <DataTable.Cell style={styles.dataText}>
                                     {item.estado}
@@ -144,6 +171,32 @@ export default function Solicitudes() {
             >
                 <View style={styles.modal}>
                     <Text style={styles.title}>Solicitud</Text>
+
+                    {isModalVisible === true ? (
+                        <View>
+                            <Text style={styles.message}>
+                                De:{" "}
+                                <Text style={styles.messageText}>
+                                    {selectedSolicitud.solicitante}
+                                </Text>
+                            </Text>
+                        </View>
+                    ) : (
+                        <Text>Perate</Text>
+                    )}
+
+                    {isModalVisible === true ? (
+                        <View>
+                            <Text style={styles.message}>
+                                Por:{" "}
+                                <Text style={styles.messageText}>
+                                    {selectedSolicitud.descripcion}
+                                </Text>
+                            </Text>
+                        </View>
+                    ) : (
+                        <Text>Perate</Text>
+                    )}
 
                     <View style={{ gap: 5 }}>
                         <Text style={styles.label}>Estado</Text>
@@ -176,14 +229,20 @@ export default function Solicitudes() {
                     </View>
 
                     <View style={styles.modalButtons}>
-                        <TouchableOpacity
-                            style={[styles.button, styles.cancel]}
-                            onPress={tursoCancelSoli}
-                        >
-                            <Text style={styles.buttonText}>
-                                Cancelar Solicitud
-                            </Text>
-                        </TouchableOpacity>
+                        {isModalVisible &&
+                            (user.nombre_usuario ===
+                            selectedSolicitud.solicitante ? (
+                                <Text></Text>
+                            ) : (
+                                <TouchableOpacity
+                                    style={[styles.button, styles.delete]}
+                                    onPress={tursoCancelSoli}
+                                >
+                                    <Text style={styles.buttonText}>
+                                        Cancelar Solicitud
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
 
                         <TouchableOpacity
                             style={[styles.button, styles.cancel]}
@@ -191,6 +250,21 @@ export default function Solicitudes() {
                         >
                             <Text style={styles.buttonText}>Salir</Text>
                         </TouchableOpacity>
+
+                        {isModalVisible &&
+                            (user.nombre_usuario ===
+                            selectedSolicitud.solicitante ? (
+                                <Text></Text>
+                            ) : (
+                                <TouchableOpacity
+                                    style={[styles.button, styles.save]}
+                                    onPress={acceptSoli}
+                                >
+                                    <Text style={styles.buttonText}>
+                                        Aprobar solicitud
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
                     </View>
                 </View>
             </Modal>
@@ -199,6 +273,17 @@ export default function Solicitudes() {
 }
 
 const styles = StyleSheet.create({
+    message: {
+        color: colors.secondary,
+        fontWeight: 600,
+        fontSize: 18,
+    },
+    messageText: {
+        color: "#3b3b3b",
+        fontWeight: 400,
+        fontSize: 18,
+    },
+
     container: {
         flex: 1,
         padding: 20,
