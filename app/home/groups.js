@@ -24,7 +24,7 @@ export default function Groups() {
     }, [search]);
 
     // OBTENER GRUPOS
-    const fetchGroups = async () => {
+    const fetchGroups = async (search = "") => {
         try {
             const response = await fetch(
                 `${config.serverUrl}/groups?search=${search}`
@@ -188,7 +188,7 @@ export default function Groups() {
                 </DataTable.Header>
                 <FlatList
                     data={groups}
-                    keyExtractor={(groups) => groups.grupo}
+                    keyExtractor={(groups) => groups.id_grupo}
                     renderItem={({ item, index }) => (
                         <TouchableOpacity
                             onPress={() => {
