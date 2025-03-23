@@ -19,3 +19,8 @@ CONEXION A LA BASE DE DATOS
     pueden verla con el comando ipconfig en cmd.
     Solo tienen que construir el fetch como en el registro o el login, importando ese archivo en 
     la vista y configurando su fetch con la peticion que deseen.
+
+CREAR APK
+    Primer build --> crear archivo eas.json
+
+    eas build -p android --profile preview
