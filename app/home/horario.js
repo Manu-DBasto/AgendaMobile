@@ -324,63 +324,7 @@ export default function simpleHorario() {
                 </View>
             </ScrollView>
 
-            <Modal
-                isVisible={isModalVisible}
-                onBackdropPress={() => setModalVisible1(false)}
-                style={styles.modalContainer}
-            >
-                <View style={styles.modal}>
-                    <Text style={styles.title}>Solicitud</Text>
 
-                    <View style={{ gap: 5 }}>
-                        <Text style={styles.label}>Estado</Text>
-                        <View style={styles.pickerContainer}>
-                            <Picker
-                                selectedValue={selectedSolicitud?.estado}
-                                onValueChange={(itemValue) =>
-                                    setSelectedSolicitud({
-                                        ...selectedSolicitud,
-                                        estado: itemValue,
-                                    })
-                                }
-                                style={styles.picker}
-                                enabled={false} // Solo visualización
-                            >
-                                <Picker.Item
-                                    label="Pendiente"
-                                    value="Pendiente"
-                                />
-                                <Picker.Item
-                                    label="Aprobada"
-                                    value="Aprobada"
-                                />
-                                <Picker.Item
-                                    label="Rechazada"
-                                    value="Rechazada"
-                                />
-                            </Picker>
-                        </View>
-                    </View>
-
-                    <View style={styles.modalButtons}>
-                        <TouchableOpacity
-                            style={[styles.button, styles.cancel]}
-                            
-                        >
-                            <Text style={styles.buttonText}>
-                                Cancelar Solicitud
-                            </Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={[styles.button, styles.cancel]}
-                            onPress={() => setModalVisible(false)}
-                        >
-                            <Text style={styles.buttonText}>Salir</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
         </View>
     );
 }
