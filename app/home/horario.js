@@ -32,6 +32,7 @@ export default function simpleHorario() {
     const [grupos, setGrupos] = useState([]);
     const [selectedDay, setSelectedDay] = useState("Lunes");
     const [isModalVisible, setModalVisible] = useState(false);
+    const [selectedSolicitud, setSelectedSolicitud] = useState(null);
 
     const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
     const startTime = 7 * 60;
