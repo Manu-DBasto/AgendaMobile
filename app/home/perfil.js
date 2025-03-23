@@ -18,7 +18,21 @@ export default function Perfil() {
     const [editedUser, setEditedUser] = useState(null);
     console.log(user);
 
+    // const fetchUserData = async () => {
+    //     try {
+    //         const response = await fetch(
+    //             `https://tursosv.onrender.com/users/${user.id_usuario}`
+    //         );
+    //         const data = await response.json();
+    //         setUser(data);
+    //         setEditedUser(data);
+    //     } catch (error) {
+    //         console.error("Error al obtener usuario:", error);
+    //     }
+    // };
+
     const fetchUserData = async () => {
+        if (!user?.id_usuario) return;
         try {
             const response = await fetch(
                 `https://tursosv.onrender.com/users/${user.id_usuario}`
@@ -31,13 +45,47 @@ export default function Perfil() {
         }
     };
 
-    useEffect(() => {
-        if (user) fetchUserData();
-    }, []);
+    // useEffect(() => {
+    //     if (user) fetchUserData();
+    // }, []);
 
+    // useEffect(() => {
+    //     if (user) setEditedUser({ ...user });
+    // }, [user]);
+
+    useEffect(() => {
+        fetchUserData();
+    }, [user?.id_usuario]);
+
+    // Sincronizar editedUser con user cuando se actualiza
     useEffect(() => {
         if (user) setEditedUser({ ...user });
     }, [user]);
+
+    // const handleEdit = async () => {
+    //     if (!editedUser) return;
+    //     try {
+    //         const response = await fetch(
+    //             `https://tursosv.onrender.com/users/${user.id_usuario}`,
+    //             {
+    //                 method: "PUT",
+    //                 headers: { "Content-Type": "application/json" },
+    //                 body: JSON.stringify(editedUser),
+    //             }
+    //         );
+    //         const result = await response.json();
+    //         if (result.message === "Usuario actualizado correctamente") {
+    //             fetchUserData();
+    //             setModalVisible(false);
+
+    //             alert(
+    //                 "Perfil actualizado. Para ver los cambios reflejados, es necesario iniciar sesion nuevamente"
+    //             );
+    //         }
+    //     } catch (error) {
+    //         console.error("Error actualizando usuario:", error);
+    //     }
+    // };
 
     const handleEdit = async () => {
         if (!editedUser) return;
@@ -51,13 +99,10 @@ export default function Perfil() {
                 }
             );
             const result = await response.json();
-            if (result.message === "Usuario actualizado correctamente") {
-                fetchUserData();
-                setModalVisible(false);
 
-                alert(
-                    "Perfil actualizado. Para ver los cambios reflejados, es necesario iniciar sesion nuevamente"
-                );
+            if (result.message === "Usuario actualizado correctamente") {
+                setUser(editedUser);
+                setModalVisible(false);
             }
         } catch (error) {
             console.error("Error actualizando usuario:", error);
