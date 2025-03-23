@@ -191,7 +191,7 @@ function NotificationButton({ navigation }) {
         const fetchNotifications = async () => {
             try {
                 const response = await fetch(
-                    `http://tursosv.onrender.com/solicitudes/notificaciones/${user.id_usuario}`
+                    `https://tursosv.onrender.com/solicitudes/notificaciones/${user.id_usuario}`
                 );
                 const data = await response.json();
 
