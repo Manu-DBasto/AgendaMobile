@@ -23,7 +23,8 @@ export default function simpleHorario() {
     const [horaFin, setHoraFin] = useState("");
     const [horarios, setHorarios] = useState([]);
     const [selectedCell, setSelectedCell] = useState(null);
-    const [showModal, setShowModal] = useState(false);
+    const [showModal1, setShowModal1] = useState(false);
+    const [showModal2, setShowModal2] = useState(false);
     const [nextModuleSame, setNextModuleSame] = useState(false);
     const [selectedProfesor, setSelectedProfesor] = useState("");
     const [selectedGrupo, setSelectedGrupo] = useState("");
@@ -320,6 +321,64 @@ export default function simpleHorario() {
                     />
                 </View>
             </ScrollView>
+
+            <Modal
+                isVisible={isModalVisible}
+                onBackdropPress={() => setModalVisible1(false)}
+                style={styles.modalContainer}
+            >
+                <View style={styles.modal}>
+                    <Text style={styles.title}>Solicitud</Text>
+
+                    <View style={{ gap: 5 }}>
+                        <Text style={styles.label}>Estado</Text>
+                        <View style={styles.pickerContainer}>
+                            <Picker
+                                selectedValue={selectedSolicitud?.estado}
+                                onValueChange={(itemValue) =>
+                                    setSelectedSolicitud({
+                                        ...selectedSolicitud,
+                                        estado: itemValue,
+                                    })
+                                }
+                                style={styles.picker}
+                                enabled={false} // Solo visualización
+                            >
+                                <Picker.Item
+                                    label="Pendiente"
+                                    value="Pendiente"
+                                />
+                                <Picker.Item
+                                    label="Aprobada"
+                                    value="Aprobada"
+                                />
+                                <Picker.Item
+                                    label="Rechazada"
+                                    value="Rechazada"
+                                />
+                            </Picker>
+                        </View>
+                    </View>
+
+                    <View style={styles.modalButtons}>
+                        <TouchableOpacity
+                            style={[styles.button, styles.cancel]}
+                            onPress={tursoCancelSoli}
+                        >
+                            <Text style={styles.buttonText}>
+                                Cancelar Solicitud
+                            </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[styles.button, styles.cancel]}
+                            onPress={() => setModalVisible(false)}
+                        >
+                            <Text style={styles.buttonText}>Salir</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -443,5 +502,71 @@ const styles = StyleSheet.create({
         color: colors.primary,
         fontWeight: "700",
         textDecorationLine: "underline",
+    },
+    //Estilos del modal
+    modalContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    modal: {
+        backgroundColor: colors.greenBackground,
+        padding: 20,
+        borderRadius: 10,
+        gap: 10,
+        maxWidth: 700,
+        width: "100%",
+    },
+
+    input: {
+        borderWidth: 1,
+        padding: 10,
+        borderRadius: 10,
+        borderColor: colors.secondary,
+        color: colors.onAccent,
+        backgroundColor: colors.light,
+    },
+
+    pickerContainer: {
+        borderWidth: 1,
+        borderColor: colors.secondary,
+        borderRadius: 10,
+        overflow: "hidden",
+    },
+
+    picker: {
+        width: "100%",
+        minHeight: 40,
+        backgroundColor: colors.light,
+    },
+
+    label: {
+        fontWeight: "600",
+        color: colors.secondary,
+    },
+
+    modalButtons: {
+        flexDirection: "row",
+        justifyContent: "space-around",
+        marginTop: 10,
+    },
+
+    button: { padding: 10, borderRadius: 5 },
+
+    save: {
+        backgroundColor: colors.success,
+    },
+
+    delete: {
+        backgroundColor: colors.error,
+    },
+
+    cancel: {
+        backgroundColor: colors.dark,
+    },
+
+    buttonText: {
+        color: colors.light,
+        fontWeight: "bold",
+        textAlign: "center",
     },
 });
