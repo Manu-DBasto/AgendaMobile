@@ -211,7 +211,7 @@ function NotificationButton({ navigation }) {
 
     return (
         <TouchableOpacity
-            onPress={() => navigation.navigate("solicitudes")}
+            onPress={() => navigation.navigate("/home/solicitudes")}
             style={style.notificationButton}
         >
             <Text style={style.notificationText}>
