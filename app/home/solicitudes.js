@@ -50,7 +50,7 @@ export default function Solicitudes() {
         if (!selectedSolicitud) return;
         try {
             const response = await fetch(
-                `http://localhost:3000/solicitudes/aceptar`,
+                `http://tursosv.onrender.com/solicitudes/aceptar`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
