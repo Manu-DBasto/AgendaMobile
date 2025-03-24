@@ -13,6 +13,7 @@ import config from "@/components/config";
 import { Picker } from "@react-native-picker/picker";
 import { colors } from "@/assets/utilities/colors";
 import { AuthContext } from "@/context/authContext";
+import { useFocusEffect } from "expo-router";
 
 export default function Solicitudes() {
     const [solicitudes, setSolicitudes] = useState([]);
@@ -21,7 +22,7 @@ export default function Solicitudes() {
     const [search, setSearch] = useState("");
     const { user } = useContext(AuthContext);
 
-    useEffect(() => {
+    useFocusEffect(() => {
         if (user) {
             tursoFetchSolicitudes(search, user.id_usuario);
         } else {

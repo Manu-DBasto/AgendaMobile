@@ -16,6 +16,7 @@ import { useState, useEffect, useContext } from "react";
 import { colors } from "@/assets/utilities/colors";
 import { Link } from "expo-router";
 import { AuthContext } from "@/context/authContext";
+import { useFocusEffect } from "expo-router";
 
 const isDesktop = typeof window !== "undefined" && window.innerWidth > 800;
 
@@ -47,7 +48,7 @@ export default function simpleHorario() {
 
     const isMobile = width < 600;
 
-    useEffect(() => {
+    useFocusEffect(() => {
         pullHorarios();
         fetchProfesores();
         fetchGrupos();
