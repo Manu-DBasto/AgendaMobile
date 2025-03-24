@@ -135,15 +135,6 @@ function CustomDrawerContent(props) {
 
             {userRole === "admin" && (
                 <TouchableOpacity
-                    onPress={() => navigation.navigate("home/horario")}
-                    style={style.options}
-                >
-                    <Text style={style.textOptions}>Administrar horario</Text>
-                </TouchableOpacity>
-            )}
-
-            {userRole === "admin" && (
-                <TouchableOpacity
                     onPress={() => navigation.navigate("home/users")}
                     style={style.options}
                 >
