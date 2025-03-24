@@ -34,7 +34,6 @@ export default function simpleHorario() {
     const [selectedDay, setSelectedDay] = useState("Lunes");
     const { user } = useContext(AuthContext);
 
-
     const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
     const startTime = 7 * 60;
     const endTime = 15 * 60 + 10;
@@ -56,7 +55,6 @@ export default function simpleHorario() {
     const [nuevoGrupo, setNuevoGrupo] = useState("");
     const [descripcion, setDescripcion] = useState("");
     const [nuevoGrupoOcupar, setNuevoGrupoOcupar] = useState("");
-
 
     const pullHorarios = async () => {
         try {
@@ -141,7 +139,6 @@ export default function simpleHorario() {
         return hours * 60 + minutes;
     };
 
-
     let schedule = [];
     let time = startTime;
     while (time + moduleDuration <= endTime) {
@@ -194,21 +191,16 @@ export default function simpleHorario() {
     const handleCellPress = (day, index, item) => {
         setSelectedCell(day, index);
 
-
         // Agregar las horas al estado del modal
         setHoraInicio(item.start);
         setHoraFin(item.end);
 
         if (day.id) {
-            setShowModal1(true);// Abrir modal "Ocupar"
+            setShowModal1(true); // Abrir modal "Ocupar"
         } else {
-
             setShowModal2(true); // Abrir modal "Solicitar"
         }
     };
-
-
-
 
     const getProfessorColor = (profesorId) => {
         // Lista de colores predefinidos
@@ -264,14 +256,11 @@ export default function simpleHorario() {
         const { item, index } = selectedCell;
         const day = daysOfWeek[index];
 
-
-
         //const hora_inicio = `${String(Math.floor(item.start / 60)).padStart(2, "0")}:${String(item.start % 60).padStart(2, "0")}:00`;
         //const hora_fin = `${String(Math.floor(item.end / 60)).padStart(2, "0")}:${String(item.end % 60).padStart(2, "0")}:00`;
 
         let nuevoGrupoOcuparInt = parseInt(nuevoGrupoOcupar, 10);
         let users = user.id_usuario.toString();
-
 
         console.log("Datos a enviar:", {
             hora_inicio: horaInicio,
@@ -332,36 +321,36 @@ export default function simpleHorario() {
         }
         let nuevoGrupoOcuparInt = parseInt(nuevoGrupoOcupar, 10);
         function formatToTime(hora) {
-            return hora + ":00";  // Añadimos los segundos (00)
+            return hora + ":00"; // Añadimos los segundos (00)
         }
 
         let horaInicioFormatted = formatToTime(horaInicio);
         let horaFinFormatted = formatToTime(horaFin);
         let users = user.id_usuario.toString();
 
-        console.log("horaInicio:", horaInicioFormatted);  // 7:00:00
-        console.log("horaFin:", horaFinFormatted);  // 7:50:00
+        console.log("horaInicio:", horaInicioFormatted); // 7:00:00
+        console.log("horaFin:", horaFinFormatted); // 7:50:00
         console.log("nuevoGrupoOcupar:", nuevoGrupoOcupar);
         console.log("datos dia:", selectedCell.dia);
-        console.log("usuario a enviar:", users)
-
-
-
+        console.log("usuario a enviar:", users);
 
         try {
-            const response = await fetch(`https://tursosv.onrender.com/up-horario`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    hora_inicio: horaInicioFormatted,
-                    hora_fin: horaFinFormatted,
-                    dia: selectedCell.dia,
-                    id_usuario: users, // Asigna el horario al usuario autenticado
-                    id_grupo: nuevoGrupoOcupar,
-                }),
-            });
+            const response = await fetch(
+                `https://tursosv.onrender.com/up-horario`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        hora_inicio: horaInicioFormatted,
+                        hora_fin: horaFinFormatted,
+                        dia: selectedCell.dia,
+                        id_usuario: users, // Asigna el horario al usuario autenticado
+                        id_grupo: nuevoGrupoOcupar,
+                    }),
+                }
+            );
 
             const result = await response.json();
 
@@ -377,7 +366,6 @@ export default function simpleHorario() {
                 fetchProfesores();
                 fetchGrupos();
                 setShowModal2(false);
-
             }
         } catch (error) {
             console.error("Error al guardar el horario:", error);
@@ -386,8 +374,6 @@ export default function simpleHorario() {
         }
     };
     const handleSoli = async () => {
-
-
         if (!user?.id_usuario) {
             alert("Por favor, seleccione un usuario.");
             return;
@@ -406,7 +392,6 @@ export default function simpleHorario() {
         }
         let nuevoGrupoOcuparInt = parseInt(nuevoGrupoOcupar, 10);
         let users = user.id_usuario.toString();
-
 
         console.log("Datos a enviar:", {
             hora_inicio: horaInicio,
@@ -458,33 +443,30 @@ export default function simpleHorario() {
         }
 
         // Cerrar el modal después de guardar
-         // Abrir modal "Solicitar"
+        // Abrir modal "Solicitar"
     };
 
     const handleSavea = async () => {
-
         let nuevoGrupoOcuparInt = parseInt(nuevoGrupoOcupar, 10);
-        console.log("nuevoGrupoOcupar:", nuevoGrupoOcuparInt);  // Asegúrate de que este valor esté correcto
-        console.log("horaInicio:", horaInicio);  // Asegúrate de que estos valores estén correctos
+        console.log("nuevoGrupoOcupar:", nuevoGrupoOcuparInt); // Asegúrate de que este valor esté correcto
+        console.log("horaInicio:", horaInicio); // Asegúrate de que estos valores estén correctos
         console.log("horaFin:", horaFin);
         const { item, index } = selectedCell;
         const day = daysOfWeek[index];
 
         console.log("datos dia:", selectedCell.dia);
-        console.log("usuario a envbiar:", user.id_usuario)
+        console.log("usuario a envbiar:", user.id_usuario);
 
         // Función para asegurarse de que el formato sea HH:MM:SS
         function formatToTime(hora) {
-            return hora + ":00";  // Añadimos los segundos (00)
+            return hora + ":00"; // Añadimos los segundos (00)
         }
 
         let horaInicioFormatted = formatToTime(horaInicio);
         let horaFinFormatted = formatToTime(horaFin);
 
-        console.log("horaInicio:", horaInicioFormatted);  // 7:00:00
-        console.log("horaFin:", horaFinFormatted);  // 7:50:00
-
-
+        console.log("horaInicio:", horaInicioFormatted); // 7:00:00
+        console.log("horaFin:", horaFinFormatted); // 7:50:00
 
         // El resto del código
     };
@@ -494,11 +476,7 @@ export default function simpleHorario() {
                 <Text style={styles.instruction}>
                     Presione para solicitar u ocupar el horario.
                 </Text>
-                <View style={styles.headerButtons}>
-                    <Link href={{ pathname: "/" }} style={styles.link}>
-                        {"<"} Volver
-                    </Link>
-                </View>
+                <View style={styles.headerButtons}></View>
             </View>
 
             {isMobile && (
@@ -517,9 +495,17 @@ export default function simpleHorario() {
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (
                     <View style={styles.row}>
-                        <Text style={styles.timeCell}>{item.start} - {item.end}</Text>
+                        <Text
+                            style={[
+                                styles.timeCell,
+                                item.isBreak && styles.breakTimeCell,
+                            ]}
+                        >
+                            {item.start} - {item.end}
+                        </Text>
                         {item.days.map((day, index) => {
-                            if (isMobile && day.dia !== selectedDay) return null;
+                            if (isMobile && day.dia !== selectedDay)
+                                return null;
                             return (
                                 <TouchableOpacity
                                     key={index}
@@ -527,20 +513,32 @@ export default function simpleHorario() {
                                         styles.cell,
                                         day.isBreak && styles.breakCell,
                                         !day.isBreak && {
-                                            backgroundColor: getProfessorColor(day.profesorId),
+                                            backgroundColor: getProfessorColor(
+                                                day.profesorId
+                                            ),
                                         },
                                     ]}
                                     disabled={day.isBreak}
-                                    onPress={() => handleCellPress(day, index, item)}
+                                    onPress={() =>
+                                        handleCellPress(day, index, item)
+                                    }
                                 >
                                     <Text style={styles.professorText}>
-                                        {day.isBreak ? "Descanso" : `${day.profesorId}`}
+                                        {day.isBreak
+                                            ? "Descanso"
+                                            : `${day.profesorId}`}
                                     </Text>
                                     <Text style={styles.groupText}>
-                                        {day.isBreak ? "" : day.grupoId ? `Grupo: ${day.grupoId}` : ""}
+                                        {day.isBreak
+                                            ? ""
+                                            : day.grupoId
+                                            ? `Grupo: ${day.grupoId}`
+                                            : ""}
                                     </Text>
                                     <Text style={styles.groupText}>
-                                        {day.carrera ? `Carrera: ${day.carrera}` : ""}
+                                        {day.carrera
+                                            ? `Carrera: ${day.carrera}`
+                                            : ""}
                                     </Text>
                                 </TouchableOpacity>
                             );
@@ -554,7 +552,9 @@ export default function simpleHorario() {
                 <View style={styles.modalContainer}>
                     <View style={styles.modal}>
                         <Text style={styles.label}>Solicitar</Text>
-                        <Text>{selectedCell?.dia} - {horaInicio} a {horaFin}</Text>
+                        <Text>
+                            {selectedCell?.dia} - {horaInicio} a {horaFin}
+                        </Text>
 
                         <Text style={styles.label}>Grupo Nuevo:</Text>
                         <Picker
@@ -581,10 +581,16 @@ export default function simpleHorario() {
                         />
 
                         <View style={styles.modalButtons}>
-                            <TouchableOpacity style={[styles.button, styles.cancel]} onPress={() => setShowModal1(false)}>
+                            <TouchableOpacity
+                                style={[styles.button, styles.cancel]}
+                                onPress={() => setShowModal1(false)}
+                            >
                                 <Text style={styles.buttonText}>Cancelar</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.button, styles.save]} onPress={handleSoli}>
+                            <TouchableOpacity
+                                style={[styles.button, styles.save]}
+                                onPress={handleSoli}
+                            >
                                 <Text style={styles.buttonText}>Solicitar</Text>
                             </TouchableOpacity>
                         </View>
@@ -597,7 +603,9 @@ export default function simpleHorario() {
                 <View style={styles.modalContainer}>
                     <View style={styles.modal}>
                         <Text style={styles.label}>Ocupar</Text>
-                        <Text>{selectedCell?.dia} - {horaInicio} a {horaFin}</Text>
+                        <Text>
+                            {selectedCell?.dia} - {horaInicio} a {horaFin}
+                        </Text>
 
                         <Text style={styles.label}>Grupo Nuevo:</Text>
                         <Picker
@@ -616,20 +624,24 @@ export default function simpleHorario() {
                         </Picker>
 
                         <View style={styles.modalButtons}>
-                            <TouchableOpacity style={[styles.button, styles.cancel]} onPress={() => setShowModal2(false)}>
+                            <TouchableOpacity
+                                style={[styles.button, styles.cancel]}
+                                onPress={() => setShowModal2(false)}
+                            >
                                 <Text style={styles.buttonText}>Cancelar</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.button, styles.save]} onPress={handleSave}>
+                            <TouchableOpacity
+                                style={[styles.button, styles.save]}
+                                onPress={handleSave}
+                            >
                                 <Text style={styles.buttonText}>Ocupar</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 </View>
             </Modal>
-
         </View>
     );
-
 }
 
 const styles = StyleSheet.create({
@@ -656,7 +668,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 50,
         paddingVertical: 10,
         gap: 10,
-
     },
     scrollView: {
         flex: 1,

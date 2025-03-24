@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: "bold",
         textAlign: "center",
-        maxWidth: 150,
+        maxWidth: 100,
     },
     row: {
         flexDirection: "row",
@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
         height: "100%",
         borderWidth: 1,
         borderColor: "#d7d7d7",
-        maxWidth: 150,
+        maxWidth: 100,
     },
     breakTimeCell: {
         minHeight: 20,
