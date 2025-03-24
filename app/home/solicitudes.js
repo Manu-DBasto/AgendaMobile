@@ -158,6 +158,11 @@ export default function Solicitudes() {
                                 </DataTable.Cell>
                                 <DataTable.Cell style={styles.dataText}>
                                     {item.estado}
+                                    {item.estado === "Pendiente" ? (
+                                        <Text>❗</Text>
+                                    ) : (
+                                        <Text></Text>
+                                    )}
                                 </DataTable.Cell>
                             </DataTable.Row>
                         </TouchableOpacity>
