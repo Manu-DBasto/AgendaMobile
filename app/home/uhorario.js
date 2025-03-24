@@ -12,9 +12,10 @@ import {
 } from "react-native";
 import config from "@/components/config";
 import { Picker } from "@react-native-picker/picker";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { colors } from "@/assets/utilities/colors";
 import { Link } from "expo-router";
+import { AuthContext } from "@/context/authContext";
 
 const isDesktop = typeof window !== "undefined" && window.innerWidth > 800;
 
@@ -31,6 +32,7 @@ export default function simpleHorario() {
     const [profesores, setProfesores] = useState([]);
     const [grupos, setGrupos] = useState([]);
     const [selectedDay, setSelectedDay] = useState("Lunes");
+    const { user } = useContext(AuthContext);
 
 
     const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
@@ -51,6 +53,10 @@ export default function simpleHorario() {
         fetchProfesores();
         fetchGrupos();
     }, []);
+    const [nuevoGrupo, setNuevoGrupo] = useState("");
+    const [descripcion, setDescripcion] = useState("");
+    const [nuevoGrupoOcupar, setNuevoGrupoOcupar] = useState("");
+
 
     const pullHorarios = async () => {
         try {
@@ -135,6 +141,7 @@ export default function simpleHorario() {
         return hours * 60 + minutes;
     };
 
+
     let schedule = [];
     let time = startTime;
     while (time + moduleDuration <= endTime) {
@@ -184,6 +191,24 @@ export default function simpleHorario() {
             };
         }),
     }));
+    const handleCellPress = (day, index, item) => {
+        setSelectedCell(day, index);
+
+
+        // Agregar las horas al estado del modal
+        setHoraInicio(item.start);
+        setHoraFin(item.end);
+
+        if (day.id) {
+            setShowModal1(true);// Abrir modal "Ocupar"
+        } else {
+
+            setShowModal2(true); // Abrir modal "Solicitar"
+        }
+    };
+
+
+
 
     const getProfessorColor = (profesorId) => {
         // Lista de colores predefinidos
@@ -222,12 +247,252 @@ export default function simpleHorario() {
         // Color por defecto si no hay profesorId
         return "#FFFFFF"; // Blanco
     };
+    const handleSave = async () => {
+        if (!user?.id_usuario) {
+            alert("Por favor, seleccione un usuario.");
+            return;
+        }
+        if (!nuevoGrupoOcupar) {
+            alert("Por favor, seleccione un grupo.");
+            return;
+        }
+        if (!selectedCell) {
+            alert("Por favor, seleccione un horario.");
+            return;
+        }
 
+        const { item, index } = selectedCell;
+        const day = daysOfWeek[index];
+
+
+
+        //const hora_inicio = `${String(Math.floor(item.start / 60)).padStart(2, "0")}:${String(item.start % 60).padStart(2, "0")}:00`;
+        //const hora_fin = `${String(Math.floor(item.end / 60)).padStart(2, "0")}:${String(item.end % 60).padStart(2, "0")}:00`;
+
+        let nuevoGrupoOcuparInt = parseInt(nuevoGrupoOcupar, 10);
+        let users = user.id_usuario.toString();
+
+
+        console.log("Datos a enviar:", {
+            hora_inicio: horaInicio,
+            hora_fin: horaFin,
+            dia: selectedCell.dia,
+            id_usuario: users, // Asigna el horario al usuario autenticado
+            id_grupo: nuevoGrupoOcuparInt,
+        });
+
+        try {
+            const response = await fetch(
+                `https://tursosv.onrender.com/up-horario`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        hora_inicio: horaInicio,
+                        hora_fin: horaFin,
+                        dia: selectedCell.dia,
+                        id_usuario: users, // Asigna el horario al usuario autenticado
+                        id_grupo: nuevoGrupoOcupar,
+                    }),
+                }
+            );
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert(result.message);
+                pullHorarios();
+                fetchProfesores();
+                fetchGrupos();
+                setShowModal2(false); // Cerrar modal si la operación fue exitosa
+            } else {
+                setShowModal2(false);
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error("Error al guardar el horario:", error);
+            alert("Ocurrió un error al guardar el horario.");
+        }
+    };
+
+    const handleSavee = async () => {
+        if (!user?.id_usuario) {
+            alert("Por favor, seleccione un usuario.");
+            return;
+        }
+        if (!nuevoGrupoOcupar) {
+            alert("Por favor, seleccione un grupo.");
+            return;
+        }
+        if (!selectedCell) {
+            alert("Por favor, seleccione un horario.");
+            return;
+        }
+        let nuevoGrupoOcuparInt = parseInt(nuevoGrupoOcupar, 10);
+        function formatToTime(hora) {
+            return hora + ":00";  // Añadimos los segundos (00)
+        }
+
+        let horaInicioFormatted = formatToTime(horaInicio);
+        let horaFinFormatted = formatToTime(horaFin);
+        let users = user.id_usuario.toString();
+
+        console.log("horaInicio:", horaInicioFormatted);  // 7:00:00
+        console.log("horaFin:", horaFinFormatted);  // 7:50:00
+        console.log("nuevoGrupoOcupar:", nuevoGrupoOcupar);
+        console.log("datos dia:", selectedCell.dia);
+        console.log("usuario a enviar:", users)
+
+
+
+
+        try {
+            const response = await fetch(`https://tursosv.onrender.com/up-horario`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    hora_inicio: horaInicioFormatted,
+                    hora_fin: horaFinFormatted,
+                    dia: selectedCell.dia,
+                    id_usuario: users, // Asigna el horario al usuario autenticado
+                    id_grupo: nuevoGrupoOcupar,
+                }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert(result.message);
+                pullHorarios(); // Recargar horarios
+                fetchProfesores();
+                fetchGrupos();
+                setShowModal2(false); // Cerrar modal
+            } else {
+                alert(`Error: ${result.message}`);
+                pullHorarios(); // Recargar horarios
+                fetchProfesores();
+                fetchGrupos();
+                setShowModal2(false);
+
+            }
+        } catch (error) {
+            console.error("Error al guardar el horario:", error);
+            alert("Ocurrió un error al guardar el horario.");
+            setShowModal2(false);
+        }
+    };
+    const handleSoli = async () => {
+
+
+        if (!user?.id_usuario) {
+            alert("Por favor, seleccione un usuario.");
+            return;
+        }
+        if (!nuevoGrupo) {
+            alert("Por favor, seleccione un grupo.");
+            return;
+        }
+        if (!selectedCell) {
+            alert("Por favor, seleccione un horario.");
+            return;
+        }
+        if (!descripcion) {
+            alert("Por favor, escriba una descripcion");
+            return;
+        }
+        let nuevoGrupoOcuparInt = parseInt(nuevoGrupoOcupar, 10);
+        let users = user.id_usuario.toString();
+
+
+        console.log("Datos a enviar:", {
+            hora_inicio: horaInicio,
+            hora_fin: horaFin,
+            dia: selectedCell.dia,
+            id_usuario: users, // Asigna el horario al usuario autenticado
+            id_grupo: nuevoGrupoOcuparInt,
+            descripcion: descripcion,
+        });
+
+        try {
+            // Preparar los datos para la solicitud
+            const requestData = {
+                hora_inicio: horaInicio,
+                hora_fin: horaFin,
+                dia: selectedCell.dia, // Asegúrate de que esta propiedad existe
+                id_solicitante: users, // Asumiendo que tienes el usuario disponible
+                id_grupo_nuevo: nuevoGrupo,
+                descripcion: descripcion,
+                estado: "Pendiente", // Estado por defecto
+            };
+
+            // Realizar la solicitud POST usando el método similar a fetchGrupos
+            const response = await fetch(
+                `https://tursosv.onrender.com/up-solicitud`,
+                {
+                    // Usar config.serverUrl para la URL
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(requestData),
+                }
+            );
+
+            const result = await response.json();
+
+            if (response.ok) {
+                setShowModal1(false);
+                alert(result.message);
+            } else {
+                setShowModal1(false);
+                alert("Error al procesar la solicitud: " + result.message);
+            }
+        } catch (error) {
+            setShowModal1(false);
+            console.error("Error al guardar la solicitud:", error);
+            alert("Hubo un problema al guardar la solicitud.");
+        }
+
+        // Cerrar el modal después de guardar
+         // Abrir modal "Solicitar"
+    };
+
+    const handleSavea = async () => {
+
+        let nuevoGrupoOcuparInt = parseInt(nuevoGrupoOcupar, 10);
+        console.log("nuevoGrupoOcupar:", nuevoGrupoOcuparInt);  // Asegúrate de que este valor esté correcto
+        console.log("horaInicio:", horaInicio);  // Asegúrate de que estos valores estén correctos
+        console.log("horaFin:", horaFin);
+        const { item, index } = selectedCell;
+        const day = daysOfWeek[index];
+
+        console.log("datos dia:", selectedCell.dia);
+        console.log("usuario a envbiar:", user.id_usuario)
+
+        // Función para asegurarse de que el formato sea HH:MM:SS
+        function formatToTime(hora) {
+            return hora + ":00";  // Añadimos los segundos (00)
+        }
+
+        let horaInicioFormatted = formatToTime(horaInicio);
+        let horaFinFormatted = formatToTime(horaFin);
+
+        console.log("horaInicio:", horaInicioFormatted);  // 7:00:00
+        console.log("horaFin:", horaFinFormatted);  // 7:50:00
+
+
+
+        // El resto del código
+    };
     return (
         <View style={styles.container}>
             <View>
                 <Text style={styles.instruction}>
-                    Inicie sesión para poder hacer cambios en el horario.
+                    Presione para solicitar u ocupar el horario.
                 </Text>
                 <View style={styles.headerButtons}>
                     <Link href={{ pathname: "/" }} style={styles.link}>
@@ -246,84 +511,125 @@ export default function simpleHorario() {
                     ))}
                 </Picker>
             )}
-            <ScrollView horizontal={!isDesktop} style={styles.scrollView}>
-                <View
-                    style={[
-                        styles.table,
-                        { width: isDesktop ? "100%" : width },
-                    ]}
-                >
-                    {!isMobile && (
-                        <View style={styles.headerRow}>
-                            <Text style={styles.headerHora}>Hora</Text>
-                            {daysOfWeek.map((day, index) => (
-                                <Text key={index} style={styles.headerCell}>
-                                    {day}
-                                </Text>
-                            ))}
-                        </View>
-                    )}
-
-                    <FlatList
-                        style={styles.list}
-                        data={fullSchedule}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item }) => (
-                            <View style={styles.row}>
-                                <Text
+            {/* Horario */}
+            <FlatList
+                data={fullSchedule}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => (
+                    <View style={styles.row}>
+                        <Text style={styles.timeCell}>{item.start} - {item.end}</Text>
+                        {item.days.map((day, index) => {
+                            if (isMobile && day.dia !== selectedDay) return null;
+                            return (
+                                <TouchableOpacity
+                                    key={index}
                                     style={[
-                                        styles.timeCell,
-                                        item.isBreak && styles.breakTimeCell,
+                                        styles.cell,
+                                        day.isBreak && styles.breakCell,
+                                        !day.isBreak && {
+                                            backgroundColor: getProfessorColor(day.profesorId),
+                                        },
                                     ]}
+                                    disabled={day.isBreak}
+                                    onPress={() => handleCellPress(day, index, item)}
                                 >
-                                    {item.start} - {item.end}
-                                </Text>
-                                {item.days.map((day, index) => {
-                                    if (isMobile && day.dia !== selectedDay) {
-                                        return null;
-                                    }
-                                    return (
-                                        <View
-                                            key={index}
-                                            style={[
-                                                styles.cell,
-                                                day.isBreak && styles.breakCell,
-                                                !day.isBreak && {
-                                                    backgroundColor:
-                                                        getProfessorColor(
-                                                            day.profesorId
-                                                        ),
-                                                },
-                                            ]}
-                                            disabled={day.isBreak}
-                                        >
-                                            <Text style={styles.professorText}>
-                                                {day.isBreak
-                                                    ? "Descanso"
-                                                    : `${day.profesorId}`}
-                                            </Text>
-                                            <Text style={styles.groupText}>
-                                                {day.isBreak
-                                                    ? ""
-                                                    : day.grupoId
-                                                        ? `Grupo: ${day.grupoId}`
-                                                        : ""}
-                                            </Text>
-                                            <Text style={styles.groupText}>
-                                                {day.carrera
-                                                    ? `Carrera: ${day.carrera}`
-                                                    : ""}
-                                            </Text>
-                                        </View>
-                                    );
-                                })}
-                            </View>
-                        )}
-                    />
+                                    <Text style={styles.professorText}>
+                                        {day.isBreak ? "Descanso" : `${day.profesorId}`}
+                                    </Text>
+                                    <Text style={styles.groupText}>
+                                        {day.isBreak ? "" : day.grupoId ? `Grupo: ${day.grupoId}` : ""}
+                                    </Text>
+                                    <Text style={styles.groupText}>
+                                        {day.carrera ? `Carrera: ${day.carrera}` : ""}
+                                    </Text>
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </View>
+                )}
+            />
+
+            {/* Modal Solicitar */}
+            <Modal visible={showModal1} transparent animationType="slide">
+                <View style={styles.modalContainer}>
+                    <View style={styles.modal}>
+                        <Text style={styles.label}>Solicitar</Text>
+                        <Text>{selectedCell?.dia} - {horaInicio} a {horaFin}</Text>
+
+                        <Text style={styles.label}>Grupo Nuevo:</Text>
+                        <Picker
+                            selectedValue={nuevoGrupo}
+                            style={styles.input}
+                            onValueChange={setNuevoGrupo}
+                        >
+                            <Picker.Item label="Seleccionar Grupo" value="" />
+                            {grupos.map((grupo) => (
+                                <Picker.Item
+                                    key={grupo.id_grupo}
+                                    label={`${grupo.nombre_grupo} - ${grupo.carrera}`}
+                                    value={grupo.id_grupo}
+                                />
+                            ))}
+                        </Picker>
+
+                        <Text style={styles.label}>Descripción</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={descripcion}
+                            onChangeText={setDescripcion}
+                            placeholder="Describe tu solicitud"
+                        />
+
+                        <View style={styles.modalButtons}>
+                            <TouchableOpacity style={[styles.button, styles.cancel]} onPress={() => setShowModal1(false)}>
+                                <Text style={styles.buttonText}>Cancelar</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.button, styles.save]} onPress={handleSoli}>
+                                <Text style={styles.buttonText}>Solicitar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
                 </View>
-            </ScrollView>
+            </Modal>
+
+            {/* Modal Ocupar */}
+            <Modal visible={showModal2} transparent animationType="slide">
+                <View style={styles.modalContainer}>
+                    <View style={styles.modal}>
+                        <Text style={styles.label}>Ocupar</Text>
+                        <Text>{selectedCell?.dia} - {horaInicio} a {horaFin}</Text>
+
+                        <Text style={styles.label}>Grupo Nuevo:</Text>
+                        <Picker
+                            selectedValue={nuevoGrupoOcupar}
+                            style={styles.input}
+                            onValueChange={setNuevoGrupoOcupar}
+                        >
+                            <Picker.Item label="Seleccionar Grupo" value="" />
+                            {grupos.map((grupo) => (
+                                <Picker.Item
+                                    key={grupo.id_grupo}
+                                    label={`${grupo.nombre_grupo} - ${grupo.carrera}`}
+                                    value={grupo.id_grupo}
+                                />
+                            ))}
+                        </Picker>
+
+                        <View style={styles.modalButtons}>
+                            <TouchableOpacity style={[styles.button, styles.cancel]} onPress={() => setShowModal2(false)}>
+                                <Text style={styles.buttonText}>Cancelar</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.button, styles.save]} onPress={handleSave}>
+                                <Text style={styles.buttonText}>Ocupar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
         </View>
     );
+
 }
 
 const styles = StyleSheet.create({
@@ -350,6 +656,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 50,
         paddingVertical: 10,
         gap: 10,
+
     },
     scrollView: {
         flex: 1,
@@ -448,6 +755,7 @@ const styles = StyleSheet.create({
     },
     //Estilos del modal
     modalContainer: {
+        marginTop: 250,
         justifyContent: "center",
         alignItems: "center",
     },
