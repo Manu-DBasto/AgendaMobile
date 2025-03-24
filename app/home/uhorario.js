@@ -17,6 +17,7 @@ import { colors } from "@/assets/utilities/colors";
 import { Link } from "expo-router";
 import { AuthContext } from "@/context/authContext";
 import { useFocusEffect } from "expo-router";
+import { useCallback } from "react";
 
 const isDesktop = typeof window !== "undefined" && window.innerWidth > 800;
 
@@ -48,11 +49,6 @@ export default function simpleHorario() {
 
     const isMobile = width < 600;
 
-    useFocusEffect(() => {
-        pullHorarios();
-        fetchProfesores();
-        fetchGrupos();
-    }, []);
     const [nuevoGrupo, setNuevoGrupo] = useState("");
     const [descripcion, setDescripcion] = useState("");
     const [nuevoGrupoOcupar, setNuevoGrupoOcupar] = useState("");
@@ -471,6 +467,15 @@ export default function simpleHorario() {
 
         // El resto del código
     };
+
+    useFocusEffect(
+        useCallback(() => {
+            pullHorarios();
+            fetchProfesores();
+            fetchGrupos();
+        }, [])
+    );
+
     return (
         <View style={styles.container}>
             <View>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 import {
     View,
     Text,
@@ -22,15 +22,19 @@ export default function Solicitudes() {
     const [search, setSearch] = useState("");
     const { user } = useContext(AuthContext);
 
-    useFocusEffect(() => {
+    const fetchSolicitudes = useCallback(() => {
         if (user) {
             tursoFetchSolicitudes(search, user.id_usuario);
+            updateNotis(user.id_usuario);
         } else {
             console.log("User is not available yet");
         }
     }, [search, user]);
 
+    useFocusEffect(fetchSolicitudes);
+
     const tursoFetchSolicitudes = async (search = "", userId) => {
+        console.log(userId);
         try {
             const response = await fetch(
                 `https://tursosv.onrender.com/solicitudes?search=${search}`,
@@ -41,7 +45,7 @@ export default function Solicitudes() {
                 }
             );
             const data = await response.json();
-            setSolicitudes(data.solicitudes);
+            setSolicitudes(data.solicitudes.reverse());
         } catch (error) {
             console.error("Error fetching solicitudes:", error);
         }
@@ -73,6 +77,32 @@ export default function Solicitudes() {
         } catch (error) {
             console.error("Error al aceptar la solicitud:", error);
             alert("Hubo un error al aceptar la solicitud.");
+        }
+    };
+
+    const updateNotis = async (userId) => {
+        try {
+            const response = await fetch(
+                `https://tursosv.onrender.com/updateNotifications`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id_user: userId,
+                    }),
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+                console.log(data.message);
+            } else {
+                console.log(data.message);
+            }
+        } catch (error) {
+            console.error("Error actualizando notificaciones:", error);
+            alert("Hubo un error actualizando notificaciones:.");
         }
     };
 
@@ -327,6 +357,11 @@ const styles = StyleSheet.create({
     tableRowsecond: {
         borderColor: colors.accent,
         backgroundColor: "#e8f3f5",
+    },
+
+    tableUnseen: {
+        borderColor: colors.accent,
+        backgroundColor: "#e0e094",
     },
 
     searchContainer: {
