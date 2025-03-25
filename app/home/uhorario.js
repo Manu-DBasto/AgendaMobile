@@ -35,6 +35,7 @@ export default function simpleHorario() {
     const [grupos, setGrupos] = useState([]);
     const [selectedDay, setSelectedDay] = useState("Lunes");
     const { user } = useContext(AuthContext);
+    const { isAuthenticated, userRole, logout } = React.useContext(AuthContext);
 
     const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
     const startTime = 7 * 60;
@@ -483,6 +484,11 @@ export default function simpleHorario() {
                     Presione para solicitar u ocupar el horario.
                 </Text>
                 <View style={styles.headerButtons}></View>
+
+                <TouchableOpacity style={styles.buttonred} activeOpacity={0.8}>
+                    <Text style={styles.buttonTextred}>Vaciar horario</Text>
+                </TouchableOpacity>
+
             </View>
 
             {isMobile && (
@@ -538,8 +544,8 @@ export default function simpleHorario() {
                                         {day.isBreak
                                             ? ""
                                             : day.grupoId
-                                            ? `Grupo: ${day.grupoId}`
-                                            : ""}
+                                                ? `Grupo: ${day.grupoId}`
+                                                : ""}
                                     </Text>
                                     <Text style={styles.groupText}>
                                         {day.carrera
@@ -836,5 +842,22 @@ const styles = StyleSheet.create({
         color: colors.light,
         fontWeight: "bold",
         textAlign: "center",
+    },
+    buttonred: {
+        backgroundColor: "#D32F2F", // Rojo fuerte
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        alignItems: "center",
+        justifyContent: "center",
+        width: "90%", // Responsivo en diferentes pantallas
+        maxWidth: 300, // Máximo ancho en pantallas grandes
+        alignSelf: "center", // Centrado en la pantalla
+        marginVertical: 10,
+    },
+    buttonTextred: {
+        color: "#FFFFFF", // Texto en blanco
+        fontSize: 16,
+        fontWeight: "bold",
     },
 });
