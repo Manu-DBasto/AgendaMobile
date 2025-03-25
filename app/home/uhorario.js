@@ -35,7 +35,7 @@ export default function simpleHorario() {
     const [grupos, setGrupos] = useState([]);
     const [selectedDay, setSelectedDay] = useState("Lunes");
     const { user } = useContext(AuthContext);
-    const { isAuthenticated, userRole, logout } = React.useContext(AuthContext);
+    const { isAuthenticated, userRole, logout } = useContext(AuthContext);
 
     const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
     const startTime = 7 * 60;
@@ -468,6 +468,33 @@ export default function simpleHorario() {
 
         // El resto del código
     };
+    const clearTables = async () => {
+        const confirmation = window.confirm("¿Estás seguro de que quieres vaciar las tablas de horarios y solicitudes?");
+        if (!confirmation) {
+            return; // Si el usuario no confirma, no hace nada.
+        }
+
+        try {
+            const response = await fetch('https://tursosv.onrender.com/clear-tables', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('Tablas vaciadas exitosamente');
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        } catch (error) {
+            console.error('Error al vaciar las tablas:', error);
+            alert('Hubo un error al vaciar las tablas');
+        }
+    };
+
 
     useFocusEffect(
         useCallback(() => {
@@ -484,10 +511,13 @@ export default function simpleHorario() {
                     Presione para solicitar u ocupar el horario.
                 </Text>
                 <View style={styles.headerButtons}></View>
+                {userRole === "admin" && (
+                    <TouchableOpacity style={styles.buttonred} activeOpacity={0.8} onPress={clearTables}>
+                        <Text style={styles.buttonTextred}>Vaciar horario</Text>
+                    </TouchableOpacity>
+                )}
 
-                <TouchableOpacity style={styles.buttonred} activeOpacity={0.8}>
-                    <Text style={styles.buttonTextred}>Vaciar horario</Text>
-                </TouchableOpacity>
+
 
             </View>
 
